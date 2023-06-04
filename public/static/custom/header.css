@@ -1,0 +1,10 @@
+/* 
+
+Add here your custom css styles Example: p { text-align: center; color: red; } 
+
+*/
+:root {
+	--Bgcolor-primary: #ed1d24!important;
+	--Textcolor-primary: #ed1d24!important;
+	--red-color:  #ed1d24!important;
+}

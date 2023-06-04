@@ -1,0 +1,61 @@
+.main-view-live{
+height: 100vh;
+width: 100vw;
+position: relative;
+}
+.camera-view{
+  flex:1;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.video-item{
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.footer-view{
+  padding: 22px;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.full-screen-dialog{
+  height: 100vh;
+  width: 100vw;
+  padding: 0px;
+  max-height: 100vh;
+  max-width: 100vw;
+  overflow: hidden;
+  margin: 0 !important;
+}
+
+.start-top-layer {
+  height: 100vh;
+  width: 100vw;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top:0
+}
+
+.live-card {
+  margin: 12px;
+  height: 240px;
+  background-color: white;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

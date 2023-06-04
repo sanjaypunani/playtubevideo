@@ -1,0 +1,10 @@
+Changes:
+
+[Added] Embed video functionality.
+[Added] PWA functionality.
+[Added] Apple login.
+[Added] Channel posts
+[Added] Missing translation.
+[Added] User timezone.
+[Modified] Mobile sidebar menu.
+[Fixed] 10+ Important bugs.

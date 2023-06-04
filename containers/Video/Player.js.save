@@ -1,0 +1,310 @@
+import React, {Component} from "react"
+import {connect} from "react-redux";
+
+import videojs from "video.js"
+import "video.js/dist/video-js.min.css"
+import "videojs-contrib-ads/dist/videojs.ads.css"
+import "videojs-ima-player/dist/videojs.ima.css"
+import "videojs-ads/src/videojs.ads.css"
+import "video.js/dist/video.min.js"
+import "videojs-contrib-ads/dist/videojs.ads.min.js"
+import "videojs-ima-player/dist/videojs.ima.js"
+import "videojs-ima-player"
+import Currency from "../Upgrade/Currency"
+import ReactDOMServer from "react-dom/server"
+import Translate from "../../components/Translate/Index.js"
+import config from "../../config"
+
+import actions from '../../store/actions/general';
+
+
+var Ads = function (player, vastAdUrl) {
+    this.player = player;
+    // Set up UI stuff.
+    var options = {debug: false, adTagUrl: vastAdUrl};
+    this.player.ima(options);
+};
+
+
+if (typeof window != "undefined") {
+    window.videojs = videojs
+    require("../../public/static/scripts/videojs-resolution-switcher").default
+    // require("../../public/static/scripts/videojs-skip-ads/dist/videojs-skip-ads.js")
+}
+
+
+class Player extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            purchased: false,
+            video: props.video,
+            userAdVideo: props.userAdVideo,
+            adminAdVideo: props.adminAdVideo,
+            updateCount: 0,
+            paused: false,
+            currentVideoTime: props.currentVideoTime,
+            hlsurl: "",
+        }
+    }
+
+    setup() {
+        let updateCount = this.state.updateCount;
+        this.setState({
+            localUpdate: true,
+            updateCount: updateCount + 1
+        });
+    }
+
+    static getDerivedStateFromProps(nextProps, prevState) {
+
+        if (prevState.localUpdate) {
+            return {...prevState, localUpdate: false}
+        } else if (nextProps.video != prevState.video || prevState.currentVideoTime != nextProps.currentVideoTime) {
+            if (typeof nextProps.getHeight == "function")
+                nextProps.getHeight();
+            return {video: nextProps.video, currentVideoTime: nextProps.currentVideoTime, purchased: false}
+        } else {
+            return null
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.updateCount !== prevState.updateCount) {
+            // If it has a player, dispose
+            if (this.player) {
+                this.player.dispose();
+            }
+            // Create new player
+            this.initiatePlayer()
+        }
+        if (this.props.video != prevState.video || prevState.currentVideoTime != this.props.currentVideoTime) {
+            this.setup();
+        }
+    }
+
+    handleEnded = () => {
+        if (this.state.video.sell_videos && this.state.video.price > 0 && !this.state.video.videoPurchased) {
+            this.setState({localUpdate: true, purchased: true})
+        } else if (this.props.ended) {
+            this.props.ended();
+        }
+        console.log('onEnded')
+    }
+    initiatePlayer = () => {
+        if (this.state.video.status != 1 || (this.state.video.type != 3 && this.state.video.type != 11))
+            return
+        let resolutionsVideo = []
+        let videoJsOptions = {}
+        let resolution = "";
+
+        if (this.state.video.type == 3) {
+            let splitName = this.state.video.video_location.split('/')
+            let fullName = splitName[splitName.length - 1]
+            let videoName = fullName.split('_')[0]
+            let suffix = this.props.imageSuffix
+            // suffix = "https://dev.clickhere.video"
+            let plrsuffix = "https:///gnxPlayer/public/gplr2.html"
+            // let plrsuffix = "http://alien.html5.run/clickvid/gnxPlayer/public/gplr2.html"
+            // let plrsuffix = "https://gnxplayer.indiaott.com/gplr2.html"
+            // suffix = "http://dev.html5.run:3000"
+            suffix = "https://vcstorage.html5.run/storage/"
+            // let path = "/upload/videos/video/"
+            let path = ""
+            console.log("proper video url is ", path + this.state.video.custom_url + "/" + this.state.video.custom_url + ".m3u8")
+            let plrurl = plrsuffix + "?path=" + suffix + path + this.state.video.custom_url + "/" + this.state.video.custom_url + ".m3u8&autoplay=true"
+
+            this.setState({
+                // hlsurl: suffix + path + this.state.video.custom_url + "/" + this.state.video.custom_url + ".m3u8"
+                hlsurl: plrurl
+            })
+
+            if (this.state.video.price <= 0 || this.state.video.videoPurchased || !this.state.video.sell_videos) {
+                if (this.state.video['4096p'] == 1) {
+                    resolutionsVideo.push({
+                        src: suffix + path + videoName + "_4096p.mp4",
+                        type: 'video/mp4',
+                        label: '4K',
+                        res: 4096
+                    })
+                    resolution = "4096"
+                }
+                if (this.state.video['2048p'] == 1) {
+                    resolutionsVideo.push({
+                        src: suffix + path + videoName + "_2048p.mp4",
+                        type: 'video/mp4',
+                        label: '2K',
+                        res: 2048
+                    })
+                    resolution = "2048"
+                }
+                if (this.state.video['1080p'] == 1) {
+                    resolutionsVideo.push({
+                        src: suffix + path + videoName + "_1080p.mp4",
+                        type: 'video/mp4',
+                        label: '1080p',
+                        res: 1080
+                    })
+                    resolution = "1080"
+                }
+                if (this.state.video['720p'] == 1) {
+                    resolutionsVideo.push({
+                        src: suffix + path + videoName + "_720p.mp4",
+                        type: 'video/mp4',
+                        label: '720p',
+                        res: 720
+                    })
+                    resolution = "720"
+                }
+                if (this.state.video['480p'] == 1) {
+                    resolutionsVideo.push({
+                        src: suffix + path + videoName + "_480p.mp4",
+                        type: 'video/mp4',
+                        label: '480p',
+                        res: 480
+                    })
+                    if (!resolution)
+                        resolution = "480"
+                }
+                if (this.state.video['360p'] == 1) {
+                    resolutionsVideo.push({
+                        src: suffix + path + videoName + "_360p.mp4",
+                        type: 'video/mp4',
+                        label: '360p',
+                        res: 360
+                    })
+                    if (!resolution)
+                        resolution = "360"
+                }
+                if (this.state.video['240p'] == 1) {
+                    resolutionsVideo.push({
+                        src: suffix + path + videoName + "_240p.mp4",
+                        type: 'video/mp4',
+                        label: '240p',
+                        res: 240
+                    })
+                    if (!resolution)
+                        resolution = "240"
+                }
+                if (this.state.video.video_location) {
+                    resolutionsVideo.push({
+                        src: suffix + path + videoName + "_240p.mp4",
+                        type: 'video/mp4',
+                        label: '360p',
+                        res: 360
+                    })
+                    if (!resolution)
+                        resolution = "360"
+                }
+            } else {
+                resolutionsVideo.push({
+                    src: suffix + path + videoName + "_sample.mp4",
+                    type: 'video/mp4',
+                    label: '360p',
+                    res: 360
+                })
+                if (!resolution)
+                    resolution = "360"
+            }
+            videoJsOptions = {
+                autoplay: true,
+                muted: typeof this.props.muted != "undefined" ? this.props.muted : false,
+                controls: typeof t+ this.state.video.custom_url + ".m3u8")
+            let plrurl = plrsuffix + "?path=" + suffix + path + this.state.video.custom_url + "/" + this.state.video.custom_url + ".m3u8&autoplay=true"
+
+            this.setState({
+                // hlsurl: suffix + path + this.state.video.custom_url + "/" + this.state.video.custom_url + ".m3u8"
+                hlsurl: plrurl
+            })
+
+            if (this.state.video.price <= 0 || this.state.video.videoPurchased || !this.state.video.sell_videos) {
+                if (this.state.video['4096p'] == 1) {
+                    resolutionsVideo.push({
+                        src: suffix + path + videoName + "_4096p.mp4",
+                        type: 'video/mp4',
+                        label: '4K',
+                        res: 4096
+                    })
+                    resolution = "4096"
+                }
+                if (this.state.video['2048p'] == 1) {
+                    resolutionsVideo.push({
+                        src: suffix + path + videoName + "_2048p.mp4",
+                        type: 'video/mp4',
+                        label: '2K',
+                        res: 2048
+                    })
+                    resolution = "2048"
+                }
+                if (this.state.video['1080p'] == 1) {
+                    resolutionsVideo.push({
+                        src: suffix + path + videoName + "_1080p.mp4",
+                        type: 'video/mp4',
+                        label: '1080p',
+                        res: 1080
+                    })
+                    resolution = "1080"
+                }
+                if (this.state.video['720p'] == 1) {
+                    resolutionsVideo.push({
+                        src: suffix + path + videoName + "_720p.mp4",
+                        type: 'video/mp4',
+                        label: '720p',
+                        res: 720
+                    })
+                    resolution = "720"
+                }
+                if (this.state.video['480p'] == 1) {
+                    resolutionsVideo.push({
+                        src: suffix + path + videoName + "_480p.mp4",
+                        type: 'video/mp4',
+                        label: '480p',
+                        res: 480
+                    })
+                    if (!resolution)
+                        resolution = "480"
+                }
+                if (this.state.video['360p'] == 1) {
+                    resolutionsVideo.push({
+                        src: suffix + path + videoName + "_360p.mp4",
+                        type: 'video/mp4',
+                        label: '360p',
+                        res: 360
+                    })
+                    if (!resolution)
+                        resolution = "360"
+                }
+                if (this.state.video['240p'] == 1) {
+                    resolutionsVideo.push({
+                        src: suffix + path + videoName + "_240p.mp4",
+                        type: 'video/mp4',
+                        label: '240p',
+                        res: 240
+                    })
+                    if (!resolution)
+                        resolution = "240"
+                }
+                if (this.state.video.video_location) {
+                    resolutionsVideo.push({
+                        src: suffix + path + videoName + "_240p.mp4",
+                        type: 'video/mp4',
+                        label: '360p',
+                        res: 360
+                    })
+                    if (!resolution)
+                        resolution = "360"
+                }
+            } else {
+                resolutionsVideo.push({
+                    src: suffix + path + videoName + "_sample.mp4",
+                    type: 'video/mp4',
+                    label: '360p',
+                    res: 360
+                })
+                if (!resolution)
+                    resolution = "360"
+            }
+            videoJsOptions = {
+                autoplay: true,
+                muted: typeof this.props.muted != "undefined" ? this.props.muted : false,
+                controls: typeof t

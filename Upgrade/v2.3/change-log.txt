@@ -1,0 +1,13 @@
+Changes:
+
+[Added] Audio Feature.
+[Added] Wasabi Storage.
+[Added] Slideshow.
+[Added] Ban user with IP.
+[Added] Setting to enable/disable category from Landing Page.
+[Added] Auto language translate option using Google translation API in Admin Panel.
+[Added] Show Popular Members on Landing Page.
+[Added] Show on Landing Page Livestreamer of the month who get's higher tip.
+[Added] Show Tipped owner on Video Details Page.
+[Updated] Share popup design.
+[Upgraded] Node/React and all packages.

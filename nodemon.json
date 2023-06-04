@@ -1,0 +1,16 @@
+{
+    "env": {        
+        "NODE_ENV":"development",
+        "PORT":"5000",
+        "DBUSER":"root",
+        "ALLOWALLUSERINADMIN":true,
+        "DBPASSWORD":"password",
+        "DBNAME":"vid1-29july",
+        "DBHOST":"localhost",
+        "ADMIN_SLUG":"/video-admin",
+        "DBPORT":"3306",
+        "TZ":"utc",
+        "PUBLIC_URL":"http://localhost:5000",
+        "SECRETKEY":"videoscriptsectetkey0root"
+    }
+}

@@ -1,0 +1,13 @@
+NODE_ENV=production
+PORT=3000
+DBUSER=root
+DBPASSWORD=gKAsqqDPqLCGqp9c
+DBNAME=vidapril1
+DBHOST=localhost
+ADMIN_SLUG=/video-admin
+DBPORT=3306
+TZ=ist
+CDN_URL_FOR_STATIC_RESOURCES=
+PUBLIC_URL=https://sp.inqtube.com
+SECRETKEY=click(der
+

@@ -1,0 +1,13 @@
+Changes:
+
+[Added] Admin settings to customise sign-up page fields.
+[Added] Admin settings to allow Content Owner to choose enable/approve Comments before display.
+[Added] Ability to Auto approve Comments of Verified Users.
+[Added] Integrated iframely to embed videos. 
+[Added] Support for react 16.13.1
+[Added] Artist Gallery photos.
+[Added] Artist Age, Gender and Birthplace fields.
+[Added] Compressed image on user side so it save server bandwidth.
+[Fixed] 27+ Important bugs.
+[Upgraded] node.js packages. 
+[Upgraded] playtubevideo Installation document.
