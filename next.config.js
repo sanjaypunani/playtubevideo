@@ -19,9 +19,9 @@ const isProd = process.env.NODE_ENV === 'production';
 // }
 module.exports = withPWA(
   withCSS({
-    // cssLoaderOptions: {
-    //   url: false,
-    // },
+    cssLoaderOptions: {
+      url: false,
+    },
     assetPrefix:
       isProd && process.env.CDN_URL_FOR_STATIC_RESOURCES
         ? process.env.CDN_URL_FOR_STATIC_RESOURCES
@@ -43,8 +43,7 @@ module.exports = withPWA(
       return config;
     },
     pwa: {
-      // disable: process.env.NODE_ENV === 'production' ? false : true,
-      disable: true,
+      disable: process.env.NODE_ENV === 'production' ? false : true,
       dest: 'public',
     },
   }),
