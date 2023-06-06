@@ -1,5 +1,5 @@
 import React from 'react';
-// import css from "./celebrate.css"
+import css from './celebrate.css';
 
 const Index = props => {
   return (

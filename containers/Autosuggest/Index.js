@@ -1,7 +1,7 @@
 // server.autosuggest.js
 import React from 'react';
 import Autosuggest from 'react-autosuggest';
-// import './autosuggest.css';
+import './autosuggest.css';
 
 class ServerAutoSuggest extends React.Component {
   constructor(props) {
