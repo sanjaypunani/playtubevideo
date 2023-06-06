@@ -203,7 +203,11 @@
   "scripts": {
     "dev:start": "nodemon --ignore 'public/static/locales/*' --ignore 'public/*' --ignore 'static/*' --ignore 'temporary/*' --ignore 'public/static/custom/header.js' server/app.js",
     "execute": "PORT=3000 npm run build && forever start --minUptime 1000 --spinSleepTime 1000 server/index.js",
+<<<<<<< HEAD
     "start": "node server/index.js -p $PORT",
+=======
+    "start": "node server/app.js -p $PORT",
+>>>>>>> f429ee4c38be2924a2bf1d28af47a7df3f8ecfd4
     "build": "next build",
     "script": "node server/index.js",
     "test": "jest --coverage"
