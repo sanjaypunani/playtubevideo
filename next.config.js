@@ -1,4 +1,4 @@
-const withCSS = require('@zeit/next-css');
+// const withCSS = require('@zeit/next-css');
 const webpack = require('webpack');
 const withPWA = require('next-pwa');
 const isProd = process.env.NODE_ENV === 'production';
@@ -50,14 +50,8 @@ const isProd = process.env.NODE_ENV === 'production';
 //   }),
 // );
 module.exports = {
-  webpack: function (config) {
-    config.plugins.push(
-      new webpack.ProvidePlugin({
-        $: 'jquery',
-        jQuery: 'jquery',
-        'window.jQuery': 'jquery',
-      }),
-    );
+  webpack(config) {
+    config.module.rules.push();
     return config;
   },
 };
