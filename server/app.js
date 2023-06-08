@@ -561,14 +561,9 @@ registerI18n(server, (t, error) => {
         }
       });
       socket.on('startStream', async data => {
-        const rtmpServer = `rtmp://localhost/live/${Math.floor(
-          Math.random() * 1000000,
-        )}`;
-        //   await createLiveStream({ stream_id: "124", stream_path: "/live/stream1" });
-        // sameio.emit("update_live", {
-        //   action: "new_live",
-        //   data: { stream_id: "123", stream_path: "/live/stream1" },
-        // });
+        const streamPath = `/live/${Math.floor(Math.random() * 1000000)}`;
+        const rtmpServer = `rtmp://localhost${streamPath}`;
+
         const ffmpegProcess = spawn('ffmpeg', [
           '-i',
           'pipe:0',
@@ -592,6 +587,17 @@ registerI18n(server, (t, error) => {
         socket.on('streamEnd', () => {
           ffmpegProcess.kill();
         });
+
+        socket.on('disconnect', async () => {
+          const reqData = {
+            stream_url: streamPath,
+          };
+          await livestream.deleteLiveStream(mysqlconnection, reqData);
+          io.emit('update_live', {
+            action: 'end_live',
+            data: { stream_path: streamPath },
+          });
+        });
       });
     });
 
@@ -609,24 +615,22 @@ registerI18n(server, (t, error) => {
               'https://cdn.pixabay.com/photo/2014/02/27/16/10/flowers-276014_1280.jpg',
           };
           await livestream.createLiveStream(mysqlconnection, reqData);
-          // await createLiveStream({ stream_id: id, stream_path: streamPath });
           io.emit('update_live', {
             action: 'new_live',
             data: { stream_id: id, stream_path: streamPath },
           });
+        });
 
-          nms.on('donePublish', async (id, streamPath, args) => {
-            const reqData = {
-              stream_id: id,
-            };
-            await livestream.deleteLiveStream(mysqlconnection, reqData);
-            // await deleteLiveStream({ stream_id: id, stream_path: streamPath });
-            io.emit('update_live', {
-              action: 'end_live',
-              data: { stream_id: id, stream_path: streamPath },
-            });
-            console.log('[Node-Media-Server] Stream stopped:', streamPath);
+        nms.on('donePublish', async (id, streamPath, args) => {
+          const reqData = {
+            stream_id: id,
+          };
+          await livestream.deleteLiveStream(mysqlconnection, reqData);
+          io.emit('update_live', {
+            action: 'end_live',
+            data: { stream_id: id, stream_path: streamPath },
           });
+          console.log('[Node-Media-Server] Stream stopped:', streamPath);
         });
       }
     }, 2000);

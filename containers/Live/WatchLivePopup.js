@@ -1,16 +1,20 @@
 import { useEffect, useRef } from 'react';
 import ReactPlayer from 'react-player';
+import Router from 'next/router';
 
 // import flv from 'flv.js';
 
 export const WatchLivePopup = ({ handleClose, open, data }) => {
   const streamUrl =
-    window.location.protocol +
+    // window.location.protocol +
+    'http:' +
     '//' +
-    window.location.hostname +
+    // window.location.hostname +
+    '103.117.156.182' +
     ':8000' +
     data?.stream_url +
     '.flv';
+
   return (
     <div className={`modal fade ${open ? 'show' : ''}`} id="watchlivepopup">
       <div className="modal-dialog modal-md modal-dialog-centered modal-xl popupDesign full-screen-dialog">
@@ -23,8 +27,20 @@ export const WatchLivePopup = ({ handleClose, open, data }) => {
                 style={{ objectFit: 'cover' }}
                 url={streamUrl}
                 playing
-                controls
+                controls={false}
               />
+            </div>
+
+            <div className="footer-view">
+              <button
+                type="button"
+                data-dismiss="modal"
+                onClick={() => {
+                  handleClose();
+                }}
+              >
+                Back
+              </button>
             </div>
           </div>
         </div>

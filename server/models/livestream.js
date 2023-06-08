@@ -25,19 +25,22 @@ module.exports = {
 
   deleteLiveStream: function (connection, data) {
     return new Promise(function (resolve, reject) {
-      connection.query(
-        'DELETE FROM live_stream WHERE stream_id = ?',
-        [data.stream_id],
-        function (err, results) {
-          if (!err) {
-            console.log('success true');
-            resolve(data);
-          } else {
-            console.log(err);
-            reject(err);
-          }
-        },
-      );
+      let queryValue = data.stream_id;
+      let query = 'DELETE FROM live_stream WHERE stream_id = ?';
+      if (!queryValue) {
+        queryValue = data?.stream_url;
+        query = 'DELETE FROM live_stream WHERE stream_url = ?';
+      }
+
+      connection.query(query, [queryValue], function (err, results) {
+        if (!err) {
+          console.log('success true');
+          resolve(data);
+        } else {
+          console.log(err);
+          reject(err);
+        }
+      });
     });
   },
 
