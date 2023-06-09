@@ -58,6 +58,11 @@ const config = {
     port: 8000,
     allow_origin: '*',
   },
+  https: {
+    port: 8443,
+    key: './ssl/privatekey.pem',
+    cert: './ssl/certificate.pem',
+  },
   // trans: {
   //   ffmpeg: 'C:\ffmpeg',
   //   tasks: [
