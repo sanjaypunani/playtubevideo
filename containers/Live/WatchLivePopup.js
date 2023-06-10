@@ -6,11 +6,11 @@ import Router from 'next/router';
 
 export const WatchLivePopup = ({ handleClose, open, data }) => {
   const streamUrl =
-    // window.location.protocol +
-    'https:' +
+    window.location.protocol +
+    // 'https:' +
     '//' +
-    // window.location.hostname +
-    '103.117.156.182' +
+    window.location.hostname +
+    // '103.117.156.182' +
     ':8443' +
     data?.stream_url +
     '.flv';
