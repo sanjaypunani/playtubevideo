@@ -60,8 +60,8 @@ const config = {
   },
   https: {
     port: 8443,
-    key: './ssl/privatekey.pem',
-    cert: './ssl/certificate.pem',
+    key: '/etc/letsencrypt/live/govup.inqtube.com/privkey.pem',
+    cert: '/etc/letsencrypt/live/govup.inqtube.com/fullchain.pem',
   },
   // trans: {
   //   ffmpeg: 'C:\ffmpeg',
