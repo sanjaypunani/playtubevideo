@@ -1,19 +1,28 @@
-import { useEffect, useRef } from 'react';
 import ReactPlayer from 'react-player';
-import Router from 'next/router';
+import { ChatRoomBox } from './ChatRoomBox';
+import { useEffect, useState } from 'react';
 
-// import flv from 'flv.js';
+let globalMessages = [];
 
-export const WatchLivePopup = ({ handleClose, open, data }) => {
-  const streamUrl =
-    window.location.protocol +
-    // 'https:' +
-    '//' +
-    window.location.hostname +
-    // '103.117.156.182' +
-    ':8443' +
-    data?.stream_url +
-    '.flv';
+export const WatchLivePopup = ({ handleClose, open, data, socket }) => {
+  const [showChat, setShowChat] = useState(false);
+  const [messages, setMessages] = useState([]);
+  globalMessages = messages;
+
+  const streamUrl = `${window?.location?.protocol}//${
+    window?.location?.hostname
+  }:${window.location.protocol === 'https:' ? '8443' : '8000'}${
+    data?.stream_url
+  }.flv`;
+
+  useEffect(() => {
+    socket.on('newMessage', message => {
+      globalMessages.push(message);
+      setMessages([...globalMessages]);
+    });
+
+    socket.emit('joinLiveStream', data?.stream_id);
+  }, []);
 
   return (
     <div className={`modal fade ${open ? 'show' : ''}`} id="watchlivepopup">
@@ -32,6 +41,7 @@ export const WatchLivePopup = ({ handleClose, open, data }) => {
             </div>
 
             <div className="footer-view">
+              <div />
               <button
                 type="button"
                 data-dismiss="modal"
@@ -41,7 +51,25 @@ export const WatchLivePopup = ({ handleClose, open, data }) => {
               >
                 Back
               </button>
+              <div
+                onClick={() => setShowChat(true)}
+                className="chat-icon-button"
+              >
+                <i
+                  class="fas fa-comment"
+                  style={{ fontSize: 24, color: 'white' }}
+                ></i>
+              </div>
             </div>
+
+            {showChat && (
+              <ChatRoomBox
+                messages={messages}
+                streamData={data}
+                socket={socket}
+                handleClose={() => setShowChat(false)}
+              />
+            )}
           </div>
         </div>
       </div>

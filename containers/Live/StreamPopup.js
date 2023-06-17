@@ -1,10 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
+import { ChatRoomBox } from './ChatRoomBox';
 
-export const StreamPopup = ({ handleClose, open, socket }) => {
+let globalMessages = [];
+
+export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
   const videoRef = useRef();
   const [streamStarted, setStreamStarted] = useState(false);
   const [localStream, setLocalStream] = useState();
   const [mediaRecorder, setMediaRecorder] = useState();
+  const [showChat, setShowChat] = useState(false);
+  const [messages, setMessages] = useState([]);
+  globalMessages = messages;
 
   const startCamera = async () => {
     let stream = await navigator.mediaDevices.getUserMedia({
@@ -18,7 +24,10 @@ export const StreamPopup = ({ handleClose, open, socket }) => {
 
   const startStream = async () => {
     try {
-      socket.emit('startStream', { path: '/live/stream1' });
+      socket.emit('startStream', {
+        stream_url: streamData?.stream_url,
+        stream_id: streamData?.stream_id,
+      });
       setStreamStarted(true);
       let recorder = new MediaRecorder(localStream);
 
@@ -51,8 +60,17 @@ export const StreamPopup = ({ handleClose, open, socket }) => {
     };
   }, []);
 
+  useEffect(() => {
+    socket.on('newMessage', message => {
+      globalMessages.push(message);
+      setMessages([...globalMessages]);
+    });
+
+    socket.emit('joinLiveStream', streamData?.stream_id.toString());
+  }, []);
+
   return (
-    <div className={`modal fade ${open ? 'show' : ''}`} id="golivepopup">
+    <div className={`modal ${open ? 'show' : ''}`} id="golivepopup">
       <div className="modal-dialog modal-md modal-dialog-centered modal-xl popupDesign full-screen-dialog">
         <div className="modal-content">
           <div className="main-view-live">
@@ -64,9 +82,19 @@ export const StreamPopup = ({ handleClose, open, socket }) => {
             {/* Footer */}
             {streamStarted && (
               <div className="footer-view">
+                <div />
                 <button type="button" data-dismiss="modal" onClick={stopStream}>
                   End
                 </button>
+                <div
+                  onClick={() => setShowChat(true)}
+                  className="chat-icon-button"
+                >
+                  <i
+                    class="fas fa-comment"
+                    style={{ fontSize: 24, color: 'white' }}
+                  ></i>
+                </div>
               </div>
             )}
 
@@ -74,6 +102,18 @@ export const StreamPopup = ({ handleClose, open, socket }) => {
               <div className="start-top-layer">
                 <button onClick={startStream}>Start stream now!</button>
               </div>
+            )}
+
+            {showChat && (
+              <ChatRoomBox
+                messages={messages}
+                streamData={{
+                  ...streamData,
+                  stream_id: streamData?.stream_id.toString(),
+                }}
+                socket={socket}
+                handleClose={() => setShowChat(false)}
+              />
             )}
           </div>
         </div>

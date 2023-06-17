@@ -6,6 +6,12 @@ exports.getLiveStreams = async (req, res) => {
   });
 };
 
+exports.createLiveStream = async (req, res) => {
+  await livestream.createLiveStreamByApi(req, res).then(result => {
+    return res.send({ streams: result });
+  });
+};
+
 exports.deleteStreams = async (req, res) => {
   try {
     console.log('get responce', req.params.stream_id);

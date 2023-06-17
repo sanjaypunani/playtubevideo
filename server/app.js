@@ -58,21 +58,10 @@ const config = {
     port: 8000,
     allow_origin: '*',
   },
-  https: {
-    port: 8443,
-    key: '/etc/letsencrypt/live/govup.inqtube.com/privkey.pem',
-    cert: '/etc/letsencrypt/live/govup.inqtube.com/fullchain.pem',
-  },
-  // trans: {
-  //   ffmpeg: 'C:\ffmpeg',
-  //   tasks: [
-  //     {
-  //       app: 'live',
-  //       hls: true,
-  //       hlsFlags: '[hls_time=2:hls_list_size=3:hls_flags=delete_segments]',
-  //       dash: false,
-  //     },
-  //   ],
+  // https: {
+  //   port: 8443,
+  //   key: '/etc/letsencrypt/live/govup.inqtube.com/privkey.pem',
+  //   cert: '/etc/letsencrypt/live/govup.inqtube.com/fullchain.pem',
   // },
 };
 
@@ -318,6 +307,8 @@ registerI18n(server, (t, error) => {
     server.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
     server.use(express.static(path.join(__dirname, 'public')));
     server.use('/images', express.static(path.join(__dirname, 'public/')));
+    server.use('/recording', express.static('recording'));
+
     server.use(
       '/Documentation',
       express.static(path.join(__dirname, 'public/')),
@@ -566,9 +557,7 @@ registerI18n(server, (t, error) => {
         }
       });
       socket.on('startStream', async data => {
-        const streamPath = `/live/${Math.floor(Math.random() * 1000000)}`;
-        const rtmpServer = `rtmp://localhost${streamPath}`;
-
+        const rtmpServer = `rtmp://localhost${data?.stream_url}`;
         const ffmpegProcess = spawn('ffmpeg', [
           '-i',
           'pipe:0',
@@ -589,20 +578,51 @@ registerI18n(server, (t, error) => {
           ffmpegProcess.stdin.write(stream);
         });
 
+        const args = [
+          '-i',
+          rtmpServer,
+          '-c:v',
+          'copy', // Copy video stream
+          '-c:a',
+          'copy', // Copy audio stream
+          `./recording/${data?.stream_id}.mp4`, // Relative file path to store in the project directory
+        ];
+
+        const recoardFfmpegProcess = spawn('ffmpeg', args);
+
+        recoardFfmpegProcess.stdout.on('data', data => {
+          // console.log(data.toString());
+        });
+
+        recoardFfmpegProcess.stderr.on('data', data => {
+          console.error(data.toString());
+        });
+
         socket.on('streamEnd', () => {
           ffmpegProcess.kill();
         });
 
         socket.on('disconnect', async () => {
           const reqData = {
-            stream_url: streamPath,
+            stream_id: data?.stream_id,
+            status: 'end',
           };
-          await livestream.deleteLiveStream(mysqlconnection, reqData);
+          await livestream.updateLiveStreamStatus(mysqlconnection, reqData);
           io.emit('update_live', {
             action: 'end_live',
-            data: { stream_path: streamPath },
+            data: { stream_path: data?.stream_url },
           });
         });
+      });
+
+      socket.on('joinLiveStream', id => {
+        console.log('get event for join ', id);
+        socket.join(id);
+      });
+
+      socket.on('newStreamMessage', message => {
+        console.log('get new message also', message);
+        io.to(message?.stream_id).emit('newMessage', message);
       });
     });
 
@@ -619,7 +639,7 @@ registerI18n(server, (t, error) => {
             poster:
               'https://cdn.pixabay.com/photo/2014/02/27/16/10/flowers-276014_1280.jpg',
           };
-          await livestream.createLiveStream(mysqlconnection, reqData);
+          // await livestream.createLiveStream(mysqlconnection, reqData);
           io.emit('update_live', {
             action: 'new_live',
             data: { stream_id: id, stream_path: streamPath },
@@ -628,9 +648,10 @@ registerI18n(server, (t, error) => {
 
         nms.on('donePublish', async (id, streamPath, args) => {
           const reqData = {
-            stream_id: id,
+            stream_url: streamPath,
+            status: 'end',
           };
-          await livestream.deleteLiveStream(mysqlconnection, reqData);
+          await livestream.updateLiveStreamStatus(mysqlconnection, reqData);
           io.emit('update_live', {
             action: 'end_live',
             data: { stream_id: id, stream_path: streamPath },
