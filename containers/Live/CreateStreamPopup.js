@@ -5,7 +5,9 @@ import { useState } from 'react';
 
 export const CreateStreamPopup = ({ handleClose, open, data }) => {
   const [streamData, setStreamData] = useState();
-  const streamId = Math.floor(Math.random() * 100000000000);
+  const [streamId, setStreamId] = useState(
+    Math.floor(Math.random() * 100000000000),
+  );
 
   const watchUrl = `${window.location.origin}/live?watch=${streamId}`;
 
