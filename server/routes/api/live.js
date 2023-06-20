@@ -6,12 +6,7 @@ const path = require('path');
 const upload = require('../../functions/upload').upload;
 const fs = require('fs');
 
-router.get(
-  '/lives',
-  multer().none(),
-
-  controller.getLiveStreams,
-);
+router.get('/lives', multer().none(), controller.getLiveStreams);
 router.post(
   '/lives',
   (req, res, next) => {
@@ -66,5 +61,6 @@ router.post(
   controller.createLiveStream,
 );
 router.delete('/lives/:stream_id', multer().none(), controller.deleteStreams);
+router.get('/lives/:stream_id', multer().none(), controller.getStreamById);
 
 module.exports = router;

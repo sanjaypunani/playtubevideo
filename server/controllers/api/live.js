@@ -14,11 +14,26 @@ exports.createLiveStream = async (req, res) => {
 
 exports.deleteStreams = async (req, res) => {
   try {
-    console.log('get responce', req.params.stream_id);
     await livestream
       .deleteLiveStreamById(req, req.params.stream_id)
       .then(result => {
         return res.send({ streams: result });
+      });
+  } catch (error) {
+    return res.send({ error });
+  }
+};
+
+exports.getStreamById = async (req, res) => {
+  try {
+    await livestream
+      .getLiveStreamById(req, req.params.stream_id)
+      .then(result => {
+        if (result[0]) {
+          return res.send({ stream: result[0] });
+        } else {
+          return res.send({ stream: null });
+        }
       });
   } catch (error) {
     return res.send({ error });

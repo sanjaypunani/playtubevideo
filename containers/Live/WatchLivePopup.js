@@ -5,15 +5,18 @@ import { useEffect, useState } from 'react';
 let globalMessages = [];
 
 export const WatchLivePopup = ({ handleClose, open, data, socket }) => {
+  console.log('data: ', data);
   const [showChat, setShowChat] = useState(false);
   const [messages, setMessages] = useState([]);
   globalMessages = messages;
 
   const streamUrl = `${window?.location?.protocol}//${
     window?.location?.hostname
-  }:${window.location.protocol === 'https:' ? '8443' : '8000'}${
-    data?.stream_url
+  }:${window.location.protocol === 'https:' ? '8443' : '8000'}/live/${
+    data?.stream_id
   }.flv`;
+
+  console.log('streamUrl: ', streamUrl);
 
   useEffect(() => {
     socket.on('newMessage', message => {

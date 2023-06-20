@@ -58,11 +58,11 @@ const config = {
     port: 8000,
     allow_origin: '*',
   },
-  https: {
-    port: 8443,
-    key: '/etc/letsencrypt/live/govup.inqtube.com/privkey.pem',
-    cert: '/etc/letsencrypt/live/govup.inqtube.com/fullchain.pem',
-  },
+  // https: {
+  //   port: 8443,
+  //   key: '/etc/letsencrypt/live/govup.inqtube.com/privkey.pem',
+  //   cert: '/etc/letsencrypt/live/govup.inqtube.com/fullchain.pem',
+  // },
 };
 
 registerI18n(server, (t, error) => {

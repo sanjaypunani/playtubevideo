@@ -6,8 +6,12 @@ import axios from 'axios';
 import { CreateStreamPopup } from './CreateStreamPopup';
 import moment from 'moment';
 import { WatchLiveRecording } from './WatchLiveRecording';
+import { useRouter } from 'next/router';
 
 export const LiveMainPage = ({ socket }) => {
+  const router = useRouter();
+  const params = router.query;
+
   const [showLiveModel, setShowLiveModel] = useState(false);
   const [showWatchLive, setShowWatchLive] = useState(false);
   const [showWatchRecording, setShowWatchRecording] = useState(false);
@@ -40,9 +44,23 @@ export const LiveMainPage = ({ socket }) => {
     });
   }, []);
 
+  useEffect(() => {
+    if (params?.watch) {
+      console.log('come here');
+      setShowWatchLive(true);
+      setTimeout(() => {
+        const liveButton = document.getElementById(
+          `watchlivepopup_${params?.watch}`,
+        );
+        liveButton.click();
+      }, 2000);
+    }
+  }, [params]);
+
   const StreamVideoCard = ({ item }) => {
     return (
       <div
+        id={`watchlivepopup_${item?.stream_id}`}
         onClick={() => {
           setWatchLiveData(item);
           if (item?.status === 'live') {

@@ -111,6 +111,23 @@ module.exports = {
     });
   },
 
+  getLiveStreamById: function (res, id) {
+    return new Promise(function (resolve, reject) {
+      res.getConnection(function (err, connection) {
+        connection.query(
+          'SELECT * FROM live_stream WHERE stream_id = ?',
+          [id],
+          function (err, results) {
+            if (err) {
+              resolve(err);
+            }
+            resolve(results);
+          },
+        );
+      });
+    });
+  },
+
   createLiveStreamByApi: function (req, res) {
     return new Promise(function (resolve, reject) {
       req.getConnection(function (err, connection) {

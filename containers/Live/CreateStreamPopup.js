@@ -5,6 +5,9 @@ import { useState } from 'react';
 
 export const CreateStreamPopup = ({ handleClose, open, data }) => {
   const [streamData, setStreamData] = useState();
+  const streamId = Math.floor(Math.random() * 100000000000);
+
+  const watchUrl = `${window.location.origin}/live?watch=${streamId}`;
 
   const handleChangeStreamData = (key, value) => {
     setStreamData({ ...streamData, [key]: value });
@@ -27,10 +30,8 @@ export const CreateStreamPopup = ({ handleClose, open, data }) => {
   };
 
   const onCreateStream = () => {
-    // handleClose({ isSuccess: true, streamData: null });
     if (checkValidation()) {
       const formData = new FormData();
-      const streamId = Math.floor(Math.random() * 100000000000);
       const streamUrl = `/live/${streamId}`;
       formData.append('image', streamData?.image);
       formData.append('name', streamData?.name);
@@ -96,6 +97,18 @@ export const CreateStreamPopup = ({ handleClose, open, data }) => {
                   />
                 )}
               </div>
+            </div>
+            <div style={{ height: 32 }} />
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <span>{watchUrl}</span>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(watchUrl);
+                }}
+                style={{ marginLeft: 12 }}
+              >
+                Copy
+              </button>
             </div>
             <div style={{ height: 32 }} />
             <button
