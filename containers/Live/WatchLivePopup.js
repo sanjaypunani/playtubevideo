@@ -1,6 +1,6 @@
 import ReactPlayer from 'react-player';
 import { ChatRoomBox } from './ChatRoomBox';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
 
 let globalMessages = [];
@@ -11,6 +11,10 @@ export const WatchLivePopup = ({ handleClose, open, data, socket }) => {
   const [streamData, setStreamData] = useState();
   const [liveStreamUrl, setLiveStreamUrl] = useState();
   const [recordingUrl, setRecordingUrl] = useState();
+  const [mutedStream, setMutedStream] = useState(true);
+  const [playing, setPlaying] = useState(false);
+  const liveRef = useRef();
+  console.log('stream url', liveStreamUrl);
   globalMessages = messages;
 
   const getStreamData = () => {
@@ -28,17 +32,16 @@ export const WatchLivePopup = ({ handleClose, open, data, socket }) => {
 
   useEffect(() => {
     if (streamData) {
-      setLiveStreamUrl(
-        `${window?.location?.protocol}//${window?.location?.hostname}:${
-          window.location.protocol === 'https:' ? '8443' : '8000'
-        }/live/${streamData?.stream_id}.flv`,
-      );
       socket.on('newMessage', message => {
         globalMessages.push(message);
         setMessages([...globalMessages]);
       });
       socket.emit('joinLiveStream', streamData?.stream_id);
-
+      setLiveStreamUrl(
+        `${window?.location?.protocol}//${window?.location?.hostname}:${
+          window.location.protocol === 'https:' ? '8443' : '8000'
+        }/live/${streamData?.stream_id}.flv`,
+      );
       setRecordingUrl(`${window?.location?.origin}${streamData?.recording}`);
     }
   }, [streamData]);
@@ -49,26 +52,40 @@ export const WatchLivePopup = ({ handleClose, open, data, socket }) => {
         <div className="modal-content">
           <div className="main-view-live">
             {streamData && streamData?.status === 'live' ? (
-              <div className="camera-view">
-                <ReactPlayer
-                  height={'100vh'}
-                  width={'100vw'}
-                  style={{ objectFit: 'cover' }}
-                  url={liveStreamUrl}
-                  playing
-                  controls={false}
-                />
+              <div
+                style={{ height: 'calc(100vh - 80px)', marginBottom: 132 }}
+                className="camera-view"
+              >
+                {liveStreamUrl && (
+                  <ReactPlayer
+                    ref={liveRef}
+                    height={'100%'}
+                    width={'100vw'}
+                    style={{ objectFit: 'cover' }}
+                    url={liveStreamUrl}
+                    playing={playing}
+                    muted={mutedStream}
+                    controls={true}
+                    onReady={() => {
+                      setPlaying(true);
+                      setMutedStream(false);
+                      console.log('get ready');
+                    }}
+                  />
+                )}
               </div>
             ) : (
               <div style={{ height: 'calc(100vh - 80px)', marginBottom: 132 }}>
-                <ReactPlayer
-                  height={'100%'}
-                  width={'100vw'}
-                  style={{ objectFit: 'cover' }}
-                  url={recordingUrl}
-                  playing
-                  controls={true}
-                />
+                {recordingUrl && (
+                  <ReactPlayer
+                    height={'100%'}
+                    width={'100vw'}
+                    style={{ objectFit: 'cover' }}
+                    url={recordingUrl}
+                    playing
+                    controls={true}
+                  />
+                )}
               </div>
             )}
 
@@ -78,6 +95,9 @@ export const WatchLivePopup = ({ handleClose, open, data, socket }) => {
                 type="button"
                 data-dismiss="modal"
                 onClick={() => {
+                  setLiveStreamUrl(null);
+                  setRecordingUrl(null);
+                  setStreamData(null);
                   handleClose();
                 }}
               >
