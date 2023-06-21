@@ -5,7 +5,7 @@
     "DBUSER": "root",
     "ALLOWALLUSERINADMIN": true,
     "DBPASSWORD": "password",
-    "DBNAME": "vid129july",
+    "DBNAME": "vid1-29july",
     "DBHOST": "localhost",
     "ADMIN_SLUG": "/video-admin",
     "DBPORT": "3306",

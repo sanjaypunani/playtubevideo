@@ -6,7 +6,6 @@ import axios from 'axios';
 let globalMessages = [];
 
 export const WatchLivePopup = ({ handleClose, open, data, socket }) => {
-  console.log('data: ', data);
   const [showChat, setShowChat] = useState(false);
   const [messages, setMessages] = useState([]);
   const [streamData, setStreamData] = useState();
@@ -61,7 +60,7 @@ export const WatchLivePopup = ({ handleClose, open, data, socket }) => {
                 />
               </div>
             ) : (
-              <div style={{ height: '100%', marginBottom: 132 }}>
+              <div style={{ height: 'calc(100vh - 80px)', marginBottom: 132 }}>
                 <ReactPlayer
                   height={'100%'}
                   width={'100vw'}
