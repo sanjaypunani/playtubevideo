@@ -1,3 +1,4 @@
+'use client';
 import React, { useEffect, useState } from 'react';
 import { StreamPopup } from './StreamPopup';
 import './livestream.css';
@@ -20,6 +21,8 @@ export const LiveMainPage = ({ socket }) => {
   const [lives, setLives] = useState([]);
   const [recordings, setRecordings] = useState([]);
   const [watchLiveData, setWatchLiveData] = useState();
+
+  console.log('showWatchLive: ', showWatchLive);
 
   const getLiveStreams = () => {
     const url = '/api/lives?status=live';
@@ -47,20 +50,16 @@ export const LiveMainPage = ({ socket }) => {
   useEffect(() => {
     if (params?.watch) {
       console.log('come here');
-      setShowWatchLive(true);
-      setTimeout(() => {
-        const liveButton = document.getElementById(
-          `watchlivepopup_${params?.watch}`,
-        );
-        liveButton.click();
-      }, 2000);
+      setWatchLiveData({ stream_id: params?.watch });
+      const liveButton = document.getElementById(`watch-live-hidden-button`);
+      liveButton.click();
     }
   }, [params]);
 
   const StreamVideoCard = ({ item }) => {
     return (
       <div
-        id={`watchlivepopup_${item?.stream_id}`}
+        // id={`watchlivepopup_${item?.stream_id}`}
         onClick={() => {
           setWatchLiveData(item);
           if (item?.status === 'live') {
@@ -115,6 +114,16 @@ export const LiveMainPage = ({ socket }) => {
         >
           Go Live
         </button>
+
+        <button
+          style={{ display: 'none' }}
+          id="watch-live-hidden-button"
+          onClick={() => setShowWatchLive(true)}
+          data-toggle="modal"
+          data-target="#watchlivepopup"
+        >
+          watchh auto stream
+        </button>
         <div style={{ height: 18 }} />
         <h3>Lives</h3>
         <div className="row">
@@ -150,14 +159,16 @@ export const LiveMainPage = ({ socket }) => {
           />
         )}
 
-        {showWatchLive && (
-          <WatchLivePopup
-            socket={socket}
-            open={showWatchLive}
-            data={watchLiveData}
-            handleClose={() => setShowWatchLive(false)}
-          />
-        )}
+        {/* {showWatchLive && ( */}
+        <WatchLivePopup
+          socket={socket}
+          open={showWatchLive}
+          data={watchLiveData}
+          handleClose={() => {
+            setShowWatchLive(false);
+          }}
+        />
+        {/* )} */}
 
         {showWatchRecording && (
           <WatchLiveRecording
