@@ -1,15 +1,33 @@
 // import flv from 'flv.js';
 
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 export const CreateStreamPopup = ({ handleClose, open, data }) => {
-  const [streamData, setStreamData] = useState();
-  const [streamId, setStreamId] = useState(
+  const { pageInfoData } = useSelector(state => state.general);
+  const categories = pageInfoData?.categories;
+  const [randomNumber, setRandomNumber] = useState(
     Math.floor(Math.random() * 100000000000),
   );
+  const [streamData, setStreamData] = useState({
+    category: categories[0],
+  });
+  const [streamId, setStreamId] = useState(
+    `${streamData?.category?.title}_live_${randomNumber}`,
+  );
 
-  const watchUrl = `${window.location.origin}/live?watch=${streamId}`;
+  useEffect(() => {
+    setStreamId(`${streamData?.category?.title}_live_${randomNumber}`);
+  }, [randomNumber, streamData?.category]);
+
+  useEffect(() => {
+    setRandomNumber(Math.floor(Math.random() * 100000000000));
+  }, [open]);
+
+  const watchUrl = useMemo(() => {
+    return `${window.location.origin}/live?watch=${streamId}`;
+  }, [streamId]);
 
   const handleChangeStreamData = (key, value) => {
     setStreamData({ ...streamData, [key]: value });
@@ -49,8 +67,8 @@ export const CreateStreamPopup = ({ handleClose, open, data }) => {
             stream_id: streamId,
             stream_url: streamUrl,
           };
+          setRandomNumber(Math.floor(Math.random() * 100000000000));
           handleClose({ isSuccess: true, streamData: data });
-          console.log('success', data);
         })
         .catch(error => {
           console.log('error:', error);
@@ -81,6 +99,33 @@ export const CreateStreamPopup = ({ handleClose, open, data }) => {
               multiple
             />
             <div style={{ height: 12 }} />
+            <div class="dropdown">
+              <button
+                class="btn btn-secondary dropdown-toggle category-drop-button"
+                type="button"
+                id="dropdownMenuButton"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                {streamData?.category?.title}
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                {categories?.map(item => {
+                  return (
+                    <div
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => handleChangeStreamData('category', item)}
+                      class="dropdown-item"
+                    >
+                      {item?.title}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <div style={{ height: 12 }} />
+
             <div className="image-upload-row">
               <input
                 multiple={false}
