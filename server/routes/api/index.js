@@ -27,6 +27,7 @@ router.use('/api', enableSettings, require('./notifications'));
 router.use('/api', enableSettings, require('./ads'));
 
 router.use('/api', enableSettings, require('./live'));
+router.use('/api', enableSettings, require('./common'));
 
 router.use(
   '/api/contact',
