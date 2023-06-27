@@ -158,6 +158,62 @@ const languageLable = {
     name: 'Hindi',
   },
 };
+
+const languages = [
+  {
+    name: 'Hindi',
+    value: 'hindi',
+  },
+  {
+    name: 'Bengali',
+    value: 'bengali',
+  },
+  {
+    name: 'Urdu',
+    value: 'urdu',
+  },
+  {
+    name: 'Punjabi',
+    value: 'punjabi',
+  },
+  {
+    name: 'Marathi',
+    value: 'marathi',
+  },
+  {
+    name: 'Telugu',
+    value: 'telugu',
+  },
+  {
+    name: 'Tamil',
+    value: 'tamil',
+  },
+  {
+    name: 'Gujarati',
+    value: 'gujarati',
+  },
+  {
+    name: 'Kannada',
+    value: 'kannada',
+  },
+  {
+    name: 'Odia',
+    value: 'odia',
+  },
+  {
+    name: 'Malayalam',
+    value: 'malayalam',
+  },
+  {
+    name: 'Assamese',
+    value: 'assamese',
+  },
+  {
+    name: 'Santali',
+    value: 'santali',
+  },
+];
+
 module.exports = {
   audio: audio,
   auth: auth,
@@ -172,4 +228,5 @@ module.exports = {
   member: member,
   ads: ads,
   languageLable: languageLable,
+  languages: languages,
 };

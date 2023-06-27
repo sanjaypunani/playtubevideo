@@ -17,11 +17,21 @@ class ServerAutoSuggest extends React.Component {
 
   // Filter logic
   getSuggestions = async value => {
-    const inputValue = value.trim().toLowerCase();
-    let response = await fetch(this.props.url + '?s=' + inputValue);
-    let data = await response.json();
-    return data;
+    if (this.props.url) {
+      const inputValue = value.trim().toLowerCase();
+      let response = await fetch(this.props.url + '?s=' + inputValue);
+      let data = await response.json();
+      return data;
+    }
   };
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.suggestionValue != prevProps.suggestionValue) {
+      if (this.props.suggestionFromPropsOnly) {
+        this.setState({ suggestions: this.props.suggestionValue });
+      }
+    }
+  }
 
   // Trigger suggestions
   getSuggestionValue = suggestion => {
@@ -56,24 +66,31 @@ class ServerAutoSuggest extends React.Component {
 
   // Suggestion rerender when user types
   onSuggestionsFetchRequested = ({ value }) => {
-    this.getSuggestions(value).then(data => {
-      if (data.error) {
-        this.setState({
-          suggestions: [],
-        });
-      } else {
-        this.setState({
-          suggestions: data.result,
-        });
-      }
-    });
+    if (this.props.fetchRequest) {
+      this.props.fetchRequest(value);
+    }
+    if (this.props.url) {
+      this.getSuggestions(value).then(data => {
+        if (data.error) {
+          this.setState({
+            suggestions: [],
+          });
+        } else {
+          this.setState({
+            suggestions: data.result,
+          });
+        }
+      });
+    }
   };
 
   // Triggered on clear
   onSuggestionsClearRequested = () => {
-    this.setState({
-      suggestions: [],
-    });
+    if (!this.props.unclear) {
+      this.setState({
+        suggestions: [],
+      });
+    }
   };
 
   render() {
