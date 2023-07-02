@@ -1,7 +1,7 @@
 {
   "env": {
     "NODE_ENV": "development",
-    "PORT": "4000",
+    "PORT": "3000",
     "DBUSER": "root",
     "ALLOWALLUSERINADMIN": true,
     "DBPASSWORD": "password",

@@ -3244,6 +3244,17 @@ label[for="subscribe"] {
     justify-content: flex-end;
     margin-top: 20px;
 }
+
+.videoNameRow{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.languageSelectorRow{
+    display: flex;
+    align-items: center;
+}
 .bntfullWidht a {
     font-size: var(--fontSize-default);
     margin: 2px 10px;
