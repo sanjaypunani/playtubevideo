@@ -166,6 +166,20 @@ class Video extends Component {
     if (this.state.submitting) {
       return;
     }
+
+    if (this.state.chooseType === 'import-language') {
+      if (!this.state.parent_video_data) {
+        return;
+      }
+
+      model['title'] = this.state.parent_video_data.title;
+      model['description'] = this.state.parent_video_data.description;
+      model['category_id'] = this.state.parent_video_data.category_id;
+      model['title'] = this.state.parent_video_data.title;
+      model['adult'] = this.state.parent_video_data.adult;
+      model['search'] = this.state.parent_video_data.search;
+      model['adult'] = this.state.parent_video_data.adult;
+    }
     if (model['duration']) {
       //check duration format it must be HH:MM:SS
       let valid = /^\d{2}:\d{2}:\d{2}$/.test(model['duration']);
@@ -1154,22 +1168,22 @@ class Video extends Component {
     let validatorUploadImport = [];
     let fieldUploadImport = [];
 
-    if (
-      this.state.chooseType === 'import-language' &&
-      this.state.parent_video_data
-    ) {
-      defaultValues['title'] = this.state.parent_video_data.title;
-      defaultValues['description'] = this.state.parent_video_data.description;
-      defaultValues['category_id'] = this.state.parent_video_data.category_id;
-      defaultValues['title'] = this.state.parent_video_data.title;
-      defaultValues['adult'] = this.state.parent_video_data.adult;
-      defaultValues['search'] = this.state.parent_video_data.search;
-      defaultValues['adult'] = this.state.parent_video_data.adult;
-      console.log(
-        'this.state.parent_video_data: ',
-        this.state.parent_video_data,
-      );
-    }
+    // if (
+    //   this.state.chooseType === 'import-language' &&
+    //   this.state.parent_video_data
+    // ) {
+    //   defaultValues['title'] = this.state.parent_video_data.title;
+    //   defaultValues['description'] = this.state.parent_video_data.description;
+    //   defaultValues['category_id'] = this.state.parent_video_data.category_id;
+    //   defaultValues['title'] = this.state.parent_video_data.title;
+    //   defaultValues['adult'] = this.state.parent_video_data.adult;
+    //   defaultValues['search'] = this.state.parent_video_data.search;
+    //   defaultValues['adult'] = this.state.parent_video_data.adult;
+    //   console.log(
+    //     'this.state.parent_video_data: ',
+    //     this.state.parent_video_data,
+    //   );
+    // }
     if (
       (this.state.chooseType == 'upload' ||
         this.state.chooseType == 'import-language') &&
