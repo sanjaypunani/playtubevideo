@@ -1,6 +1,7 @@
 // import flv from 'flv.js';
 
 import axios from 'axios';
+import moment from 'moment';
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -12,6 +13,8 @@ export const CreateStreamPopup = ({ handleClose, open, data }) => {
   );
   const [streamData, setStreamData] = useState({
     category: categories[0],
+    stream_date: moment(new Date()).format('YYYY-MM-DD'),
+    stream_time: moment(new Date()).format('hh:mm'),
   });
   const [streamId, setStreamId] = useState(
     `${streamData?.category?.title}_live_${randomNumber}`,
@@ -49,7 +52,7 @@ export const CreateStreamPopup = ({ handleClose, open, data }) => {
     return valid;
   };
 
-  const onCreateStream = () => {
+  const onCreateStream = status => {
     if (checkValidation()) {
       const formData = new FormData();
       const streamUrl = `/live/${streamId}`;
@@ -66,9 +69,14 @@ export const CreateStreamPopup = ({ handleClose, open, data }) => {
             ...streamData,
             stream_id: streamId,
             stream_url: streamUrl,
+            status: status,
           };
           setRandomNumber(Math.floor(Math.random() * 100000000000));
-          handleClose({ isSuccess: true, streamData: data });
+          if (status === 'live') {
+            handleClose({ isSuccess: true, streamData: data });
+          } else {
+            handleClose();
+          }
         })
         .catch(error => {
           console.log('error:', error);
@@ -145,6 +153,31 @@ export const CreateStreamPopup = ({ handleClose, open, data }) => {
                 )}
               </div>
             </div>
+
+            <div className="container dateTimeContainer">
+              <div className="row">
+                <div className="col-md-6 dateTimeItem">
+                  <span>Schedule Date</span>
+                  <input
+                    value={streamData?.stream_date}
+                    className="dateTimeInput"
+                    type="date"
+                  />
+                </div>
+                <div className="col-md-6 dateTimeItem">
+                  <span>Schedule Time</span>
+                  <input
+                    onChange={e => {
+                      console.log('get time', e.target.value);
+                    }}
+                    value={streamData?.stream_time}
+                    className="dateTimeInput"
+                    type="time"
+                  />
+                </div>
+              </div>
+            </div>
+
             <div style={{ height: 32 }} />
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <span>{watchUrl}</span>
@@ -158,15 +191,39 @@ export const CreateStreamPopup = ({ handleClose, open, data }) => {
               </button>
             </div>
             <div style={{ height: 32 }} />
-            <button
-              type="button"
-              data-dismiss="modal"
-              data-toggle="modal"
-              data-target="#golivepopup"
-              onClick={() => onCreateStream()}
-            >
-              Go Live
-            </button>
+            <div className="container">
+              <div className="row">
+                <div
+                  style={{ display: 'flex', justifyContent: 'center' }}
+                  className="col-md-6"
+                >
+                  <button
+                    type="button"
+                    className="outlineButton"
+                    data-dismiss="modal"
+                    data-toggle="modal"
+                    data-target="#golivepopup"
+                    onClick={() => onCreateStream('schedule')}
+                  >
+                    Schedule Stream
+                  </button>
+                </div>
+                <div
+                  style={{ display: 'flex', justifyContent: 'center' }}
+                  className="col-md-6"
+                >
+                  <button
+                    type="button"
+                    // data-dismiss="modal"
+                    // data-toggle="modal"
+                    // data-target="#golivepopup"
+                    onClick={() => onCreateStream('live')}
+                  >
+                    Go Live Now
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

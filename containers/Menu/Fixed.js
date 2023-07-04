@@ -520,7 +520,7 @@ class FixedMenu extends Component {
                     </button>
                   </div>
                 </div>
-                <div className="dropdown">
+                {/* <div className="dropdown">
                   <button
                     className="btn btn-secondary dropdown-toggle category-drop-button"
                     type="button"
@@ -549,12 +549,9 @@ class FixedMenu extends Component {
                         </div>
                       );
                     })}
-                    {/*
-                    <div style={{ cursor: 'pointer' }} class="dropdown-item">
-                      {'Hindi'}
-                    </div> */}
+                   
                   </div>
-                </div>
+                </div> */}
                 <div className="rightTopList right-side">
                   {!this.props.pageInfoData.loggedInUserDetails ? (
                     <div className="rightTopList">

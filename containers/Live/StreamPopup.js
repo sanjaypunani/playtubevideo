@@ -12,7 +12,7 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
   const [messages, setMessages] = useState([]);
   globalMessages = messages;
 
-  const startCamera = async () => {
+  const setMediaForNonIos = async () => {
     let stream = await navigator.mediaDevices.getUserMedia({
       video: true,
       audio: true,
@@ -20,6 +20,45 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
     setLocalStream(stream);
     videoRef.current.srcObject = stream;
     videoRef.current.play();
+  };
+
+  const setMediaForIos = async () => {
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    const iframeDoc = iframe.contentWindow.document;
+    iframeDoc.open();
+    iframeDoc.write(
+      `<video id="iosVideo" autoplay playsinline style="object-fit: contain;"></video>`,
+    );
+    iframeDoc.close();
+
+    const iosVideo = iframeDoc.getElementById('iosVideo');
+
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+      iosVideo.srcObject = mediaStream;
+    } catch (error) {
+      console.log('Error accessing webcam on iOS:', error);
+    }
+
+    videoRef.current.srcObject = iosVideo.srcObject;
+    videoRef.current.play();
+    videoRef.current.playsInline = true;
+  };
+
+  const startCamera = async () => {
+    const iOS =
+      !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
+    if (iOS) {
+      setMediaForIos();
+    } else {
+      setMediaForNonIos();
+    }
   };
 
   const startStream = async () => {

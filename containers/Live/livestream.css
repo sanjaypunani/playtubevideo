@@ -210,6 +210,27 @@ background-color: black;
   color: black;
 }
 
+.dateTimeContainer{
+  margin-top: 22px;
+}
+
+.dateTimeItem{
+  padding: 12px;
+}
+
+.dateTimeInput{
+  height: 42px;
+  width: 100%;
+  margin-top: 8px;
+  border-radius: 8px;
+}
+
+.outlineButton{
+  background: white !important;
+  color: #FF1744 !important;
+  border: 1px solid #FF1744 !important;
+}
+
 @media only screen and (max-width: 480px) {
 
 

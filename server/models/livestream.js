@@ -142,7 +142,7 @@ module.exports = {
         insertData.push(data.name);
         insertData.push(data.description);
         insertData.push(recordingPath);
-        insertData.push('live');
+        insertData.push(data.status);
         insertData.push(dateTime.create().format('Y-m-d H:M:S'));
         let sql =
           'INSERT INTO `live_stream`( `stream_id`, `user_id`, `stream_url`, `poster`, `name`, `description`, `recording`, `status`,`creation_date`) VALUES (?,?,?,?,?,?,?,?,?)';

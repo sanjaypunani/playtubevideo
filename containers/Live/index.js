@@ -106,7 +106,7 @@ export const LiveMainPage = ({ socket }) => {
         </button>
 
         <button
-          style={{ display: 'none' }}
+          // style={{ display: 'none' }}
           id="go-live-hidden-button"
           onClick={() => setShowLiveModel(true)}
           data-toggle="modal"
@@ -125,7 +125,29 @@ export const LiveMainPage = ({ socket }) => {
           watchh auto stream
         </button>
         <div style={{ height: 18 }} />
-        <h3>Lives</h3>
+        <div className="titleWrap">
+          <span className="title">
+            <React.Fragment>
+              <span className="recent_video">
+                <span className="material-icons">video_library</span>
+              </span>
+              My Schedules
+            </React.Fragment>
+          </span>
+        </div>
+        <div style={{ height: 18 }} />
+
+        <div className="titleWrap">
+          <span className="title">
+            <React.Fragment>
+              <span className="recent_video">
+                <span className="material-icons">video_library</span>
+              </span>
+              Lives
+            </React.Fragment>
+          </span>
+        </div>
+
         <div className="row">
           {lives &&
             lives?.map(live => {
@@ -138,7 +160,16 @@ export const LiveMainPage = ({ socket }) => {
         </div>
 
         <div style={{ height: 18 }} />
-        <h3>Recordings</h3>
+        <div className="titleWrap">
+          <span className="title">
+            <React.Fragment>
+              <span className="recent_video">
+                <span className="material-icons">video_library</span>
+              </span>
+              Recordings
+            </React.Fragment>
+          </span>
+        </div>
         <div className="row">
           {recordings &&
             recordings?.map(live => {
