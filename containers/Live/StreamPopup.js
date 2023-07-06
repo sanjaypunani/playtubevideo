@@ -15,8 +15,10 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
   globalMessages = messages;
 
   const setMediaForNonIos = async () => {
+    console.log('call here for non ios', currentCamera);
+
     let stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: currentCamera },
+      video: { facingMode: { exact: currentCamera } },
       audio: true,
     });
     setLocalStream(stream);
@@ -40,7 +42,7 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
 
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: currentCamera },
+        video: { facingMode: { exact: currentCamera } },
         audio: true,
       });
       iosVideo.srcObject = mediaStream;
@@ -86,6 +88,7 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
   };
   const stopStream = () => {
     socket.emit('streamEnd');
+    // console.log('call for stop stream');
     if (mediaRecorder && mediaRecorder.state === 'recording') {
       mediaRecorder.stop();
     }
@@ -112,9 +115,14 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
   }, []);
 
   const handleCameraSwitch = () => {
-    setCurrentCamera(prevCamera =>
-      prevCamera === 'user' ? 'environment' : 'user',
-    );
+    if (localStream) {
+      localStream.getTracks().forEach(track => track.stop());
+      setCurrentCamera(prevCamera =>
+        prevCamera === 'user' ? 'environment' : 'user',
+      );
+    }
+    // stopStream();
+    // setCurrentCamera('environment');
   };
 
   return (
