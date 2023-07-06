@@ -10,11 +10,13 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
   const [mediaRecorder, setMediaRecorder] = useState();
   const [showChat, setShowChat] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [currentCamera, setCurrentCamera] = useState('user');
+
   globalMessages = messages;
 
   const setMediaForNonIos = async () => {
     let stream = await navigator.mediaDevices.getUserMedia({
-      video: true,
+      video: { facingMode: currentCamera },
       audio: true,
     });
     setLocalStream(stream);
@@ -38,7 +40,7 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
 
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
+        video: { facingMode: currentCamera },
         audio: true,
       });
       iosVideo.srcObject = mediaStream;
@@ -52,6 +54,7 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
   };
 
   const startCamera = async () => {
+    console.log('currentCamera: ', currentCamera);
     const iOS =
       !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
     if (iOS) {
@@ -97,7 +100,7 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
     return () => {
       stopStream();
     };
-  }, []);
+  }, [currentCamera]);
 
   useEffect(() => {
     socket.on('newMessage', message => {
@@ -108,6 +111,12 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
     socket.emit('joinLiveStream', streamData?.stream_id.toString());
   }, []);
 
+  const handleCameraSwitch = () => {
+    setCurrentCamera(prevCamera =>
+      prevCamera === 'user' ? 'environment' : 'user',
+    );
+  };
+
   return (
     <div className={`modal ${open ? 'show' : ''}`} id="golivepopup">
       <div className="modal-dialog modal-md modal-dialog-centered modal-xl popupDesign full-screen-dialog">
@@ -115,13 +124,26 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
           <div className="main-view-live">
             {/* Camera View */}
             <div className="camera-view">
-              <video className="video-item" ref={videoRef} muted />
+              <video
+                playsInline={true}
+                className="video-item"
+                ref={videoRef}
+                muted
+              />
             </div>
 
             {/* Footer */}
             {streamStarted && (
               <div className="footer-view">
-                <div />
+                <div
+                  onClick={() => handleCameraSwitch()}
+                  className="chat-icon-button"
+                >
+                  <i
+                    style={{ fontSize: 24, color: 'white' }}
+                    class="fa fa-camera"
+                  ></i>
+                </div>
                 <button type="button" data-dismiss="modal" onClick={stopStream}>
                   End
                 </button>

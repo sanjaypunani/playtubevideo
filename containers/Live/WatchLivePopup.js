@@ -2,6 +2,7 @@ import ReactPlayer from 'react-player';
 import { ChatRoomBox } from './ChatRoomBox';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
+import moment from 'moment';
 
 let globalMessages = [];
 
@@ -14,7 +15,6 @@ export const WatchLivePopup = ({ handleClose, open, data, socket }) => {
   const [mutedStream, setMutedStream] = useState(true);
   const [playing, setPlaying] = useState(false);
   const liveRef = useRef();
-  console.log('stream url', liveStreamUrl);
   globalMessages = messages;
 
   const getStreamData = () => {
@@ -76,15 +76,25 @@ export const WatchLivePopup = ({ handleClose, open, data, socket }) => {
               </div>
             ) : (
               <div style={{ height: 'calc(100vh - 80px)', marginBottom: 132 }}>
-                {recordingUrl && (
-                  <ReactPlayer
-                    height={'100%'}
-                    width={'100vw'}
-                    style={{ objectFit: 'cover' }}
-                    url={recordingUrl}
-                    playing
-                    controls={true}
-                  />
+                {streamData?.status !== 'schedule' ? (
+                  recordingUrl && (
+                    <ReactPlayer
+                      height={'100%'}
+                      width={'100vw'}
+                      style={{ objectFit: 'cover' }}
+                      url={recordingUrl}
+                      playing
+                      controls={true}
+                    />
+                  )
+                ) : (
+                  <div className="stream-not-start-div">
+                    <h2 className="stream-not-start-text">
+                      {`Stream will be start at ${moment(
+                        streamData?.schedule_date_time,
+                      ).format('DD MMMM hh:mm A')}`}
+                    </h2>
+                  </div>
                 )}
               </div>
             )}

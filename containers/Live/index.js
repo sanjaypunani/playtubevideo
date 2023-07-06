@@ -8,6 +8,7 @@ import { CreateStreamPopup } from './CreateStreamPopup';
 import moment from 'moment';
 import { WatchLiveRecording } from './WatchLiveRecording';
 import { useRouter } from 'next/router';
+import { ScheduledStreamPopup } from './ScheduledStreamPopup';
 
 export const LiveMainPage = ({ socket }) => {
   const router = useRouter();
@@ -15,19 +16,27 @@ export const LiveMainPage = ({ socket }) => {
 
   const [showLiveModel, setShowLiveModel] = useState(false);
   const [showWatchLive, setShowWatchLive] = useState(false);
+  const [showScheduledStream, setShowScheduledStream] = useState(false);
   const [showWatchRecording, setShowWatchRecording] = useState(false);
   const [showCreateStream, setShowCreateStream] = useState(false);
   const [createStreamData, setCreateStreamData] = useState();
+  const [scheduledStreamData, setSchedulesStreamData] = useState();
   const [lives, setLives] = useState([]);
+  const [schedules, setSchedules] = useState([]);
   const [recordings, setRecordings] = useState([]);
   const [watchLiveData, setWatchLiveData] = useState();
-
-  console.log('showWatchLive: ', showWatchLive);
 
   const getLiveStreams = () => {
     const url = '/api/lives?status=live';
     axios.get(url).then(res => {
       setLives(res?.data?.streams);
+    });
+  };
+
+  const getScheduledStream = () => {
+    const url = '/api/lives?status=schedule';
+    axios.get(url).then(res => {
+      setSchedules(res?.data?.streams);
     });
   };
 
@@ -38,12 +47,16 @@ export const LiveMainPage = ({ socket }) => {
     });
   };
 
-  useEffect(() => {
+  const getPageData = () => {
     getLiveStreams();
     getRecordedStreams();
+    getScheduledStream();
+  };
+
+  useEffect(() => {
+    getPageData();
     socket.on('update_live', () => {
-      getLiveStreams();
-      getRecordedStreams();
+      getPageData();
     });
   }, []);
 
@@ -62,15 +75,23 @@ export const LiveMainPage = ({ socket }) => {
         // id={`watchlivepopup_${item?.stream_id}`}
         onClick={() => {
           setWatchLiveData(item);
+
           if (item?.status === 'live') {
             setShowWatchLive(true);
+          } else if (item?.status === 'schedule') {
+            setSchedulesStreamData(item);
+            setShowScheduledStream(true);
           } else {
             setShowWatchRecording(true);
           }
         }}
         data-toggle="modal"
         data-target={
-          item?.status === 'live' ? '#watchlivepopup' : '#watchrecordingepopup'
+          item?.status === 'live'
+            ? '#watchlivepopup'
+            : item?.status === 'schedule'
+            ? '#scheduledstreampopup'
+            : '#watchrecordingepopup'
         }
         className="live-card"
       >
@@ -135,6 +156,16 @@ export const LiveMainPage = ({ socket }) => {
             </React.Fragment>
           </span>
         </div>
+        <div className="row">
+          {schedules &&
+            schedules?.map(live => {
+              return (
+                <div className="col-md-3">
+                  <StreamVideoCard item={live} />
+                </div>
+              );
+            })}
+        </div>
         <div style={{ height: 18 }} />
 
         <div className="titleWrap">
@@ -186,7 +217,10 @@ export const LiveMainPage = ({ socket }) => {
             socket={socket}
             open={showLiveModel}
             streamData={createStreamData}
-            handleClose={() => setShowLiveModel(false)}
+            handleClose={() => {
+              getPageData();
+              setShowLiveModel(false);
+            }}
           />
         )}
 
@@ -196,7 +230,10 @@ export const LiveMainPage = ({ socket }) => {
           open={showWatchLive}
           data={watchLiveData}
           handleClose={() => {
-            setShowWatchLive(false);
+            {
+              getPageData();
+              setShowWatchLive(false);
+            }
           }}
         />
         {/* )} */}
@@ -206,7 +243,30 @@ export const LiveMainPage = ({ socket }) => {
             socket={socket}
             open={showWatchRecording}
             data={watchLiveData}
-            handleClose={() => setShowWatchRecording(false)}
+            handleClose={() => {
+              getPageData();
+              setShowWatchRecording(false);
+            }}
+          />
+        )}
+
+        {showScheduledStream && (
+          <ScheduledStreamPopup
+            socket={socket}
+            open={showScheduledStream}
+            data={scheduledStreamData}
+            handleClose={data => {
+              getPageData();
+              if (data?.isSuccess) {
+                setCreateStreamData(data?.streamData);
+                setSchedulesStreamData(data?.streamData);
+                setSchedulesStreamData(false);
+                const liveButton = document.getElementById(
+                  'go-live-hidden-button',
+                );
+                liveButton.click();
+              }
+            }}
           />
         )}
 
@@ -214,6 +274,7 @@ export const LiveMainPage = ({ socket }) => {
           <CreateStreamPopup
             open={showCreateStream}
             handleClose={data => {
+              getPageData();
               if (data?.isSuccess) {
                 setCreateStreamData(data?.streamData);
                 setShowCreateStream(false);

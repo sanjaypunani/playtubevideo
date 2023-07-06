@@ -1,4 +1,5 @@
 const dateTime = require('node-datetime');
+const moment = require('moment');
 
 module.exports = {
   createLiveStream: function (connection, data) {
@@ -143,11 +144,38 @@ module.exports = {
         insertData.push(data.description);
         insertData.push(recordingPath);
         insertData.push(data.status);
+        insertData.push(
+          moment(data.schedule_date_time).format('YYYY-MM-DD HH:mm:ss'),
+        );
+        insertData.push(req.user.user_id || 0);
         insertData.push(dateTime.create().format('Y-m-d H:M:S'));
         let sql =
-          'INSERT INTO `live_stream`( `stream_id`, `user_id`, `stream_url`, `poster`, `name`, `description`, `recording`, `status`,`creation_date`) VALUES (?,?,?,?,?,?,?,?,?)';
+          'INSERT INTO `live_stream`( `stream_id`, `user_id`, `stream_url`, `poster`, `name`, `description`, `recording`, `status`, `schedule_date_time`, `owner`, `creation_date`) VALUES (?,?,?,?,?,?,?,?,?,?,?)';
         connection.query(sql, insertData, function (err, results) {
           if (!err) {
+            resolve(results);
+          } else {
+            console.log(err);
+            reject(err);
+          }
+        });
+      });
+    });
+  },
+
+  updateLivebyApi: function (req, res) {
+    return new Promise(function (resolve, reject) {
+      req.getConnection(function (err, connection) {
+        let queryValue = req.params.stream_id;
+        const objectData = req?.body;
+        const updateColumns = Object.keys(objectData)
+          .map(column => `${column} = '${objectData[column]}'`)
+          .join(', ');
+        let updateQuery = `UPDATE ${'live_stream'} SET ${updateColumns} WHERE stream_id = '${queryValue}'`;
+
+        connection.query(updateQuery, function (err, results) {
+          if (!err) {
+            console.log('Update stream success');
             resolve(results);
           } else {
             console.log(err);

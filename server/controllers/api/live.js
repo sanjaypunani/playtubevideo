@@ -12,6 +12,12 @@ exports.createLiveStream = async (req, res) => {
   });
 };
 
+exports.updateLiveStream = async (req, res) => {
+  await livestream.updateLivebyApi(req, res).then(result => {
+    return res.send({ result });
+  });
+};
+
 exports.deleteStreams = async (req, res) => {
   try {
     await livestream

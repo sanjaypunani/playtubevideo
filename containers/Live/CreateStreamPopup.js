@@ -2,6 +2,7 @@
 
 import axios from 'axios';
 import moment from 'moment';
+import { schedule } from 'node-cron';
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -14,7 +15,7 @@ export const CreateStreamPopup = ({ handleClose, open, data }) => {
   const [streamData, setStreamData] = useState({
     category: categories[0],
     stream_date: moment(new Date()).format('YYYY-MM-DD'),
-    stream_time: moment(new Date()).format('hh:mm'),
+    stream_time: moment(new Date()).format('HH:mm'),
   });
   const [streamId, setStreamId] = useState(
     `${streamData?.category?.title}_live_${randomNumber}`,
@@ -61,6 +62,13 @@ export const CreateStreamPopup = ({ handleClose, open, data }) => {
       formData.append('description', streamData?.description);
       formData.append('stream_id', streamId);
       formData.append('stream_url', streamUrl);
+      formData.append('status', status);
+      formData.append(
+        'schedule_date_time',
+        moment(
+          new Date(`${streamData?.stream_date} ${streamData?.stream_time}`),
+        )._d,
+      );
 
       axios
         .post('/api/lives', formData)
@@ -159,6 +167,9 @@ export const CreateStreamPopup = ({ handleClose, open, data }) => {
                 <div className="col-md-6 dateTimeItem">
                   <span>Schedule Date</span>
                   <input
+                    onChange={e => {
+                      handleChangeStreamData('stream_date', e.target.value);
+                    }}
                     value={streamData?.stream_date}
                     className="dateTimeInput"
                     type="date"
@@ -168,7 +179,7 @@ export const CreateStreamPopup = ({ handleClose, open, data }) => {
                   <span>Schedule Time</span>
                   <input
                     onChange={e => {
-                      console.log('get time', e.target.value);
+                      handleChangeStreamData('stream_time', e.target.value);
                     }}
                     value={streamData?.stream_time}
                     className="dateTimeInput"

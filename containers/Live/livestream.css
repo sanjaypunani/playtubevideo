@@ -231,6 +231,17 @@ background-color: black;
   border: 1px solid #FF1744 !important;
 }
 
+.stream-not-start-div{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.stream-not-start-text{
+  color: white;
+}
+
 @media only screen and (max-width: 480px) {
 
 

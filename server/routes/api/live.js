@@ -60,6 +60,8 @@ router.post(
   },
   controller.createLiveStream,
 );
+router.put('/lives/:stream_id', multer().none(), controller.updateLiveStream);
+
 router.delete('/lives/:stream_id', multer().none(), controller.deleteStreams);
 router.get('/lives/:stream_id', multer().none(), controller.getStreamById);
 
