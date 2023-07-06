@@ -18,7 +18,7 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
     console.log('call here for non ios', currentCamera);
 
     let stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { exact: currentCamera } },
+      video: { facingMode: currentCamera },
       audio: true,
     });
     setLocalStream(stream);
@@ -42,7 +42,7 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
 
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { exact: currentCamera } },
+        video: { facingMode: currentCamera },
         audio: true,
       });
       iosVideo.srcObject = mediaStream;
@@ -57,6 +57,10 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
 
   const startCamera = async () => {
     console.log('currentCamera: ', currentCamera);
+    const supports = navigator.mediaDevices.getSupportedConstraints();
+    if (!supports['facingMode']) {
+      alert('This browser does not support facingMode!');
+    }
     const iOS =
       !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
     if (iOS) {
@@ -120,6 +124,8 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
       setCurrentCamera(prevCamera =>
         prevCamera === 'user' ? 'environment' : 'user',
       );
+    } else {
+      alert('localstream not found');
     }
     // stopStream();
     // setCurrentCamera('environment');
