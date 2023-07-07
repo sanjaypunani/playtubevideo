@@ -9,6 +9,7 @@ import moment from 'moment';
 import { WatchLiveRecording } from './WatchLiveRecording';
 import { useRouter } from 'next/router';
 import { ScheduledStreamPopup } from './ScheduledStreamPopup';
+import Router from 'next/router';
 
 export const LiveMainPage = ({ socket }) => {
   const router = useRouter();
@@ -231,6 +232,8 @@ export const LiveMainPage = ({ socket }) => {
           data={watchLiveData}
           handleClose={() => {
             {
+              Router.push('/live');
+              Router.reload();
               getPageData();
               setShowWatchLive(false);
             }
@@ -244,6 +247,8 @@ export const LiveMainPage = ({ socket }) => {
             open={showWatchRecording}
             data={watchLiveData}
             handleClose={() => {
+              Router.push('/live');
+              Router.reload();
               getPageData();
               setShowWatchRecording(false);
             }}
