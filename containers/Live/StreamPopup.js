@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ChatRoomBox } from './ChatRoomBox';
 
 let globalMessages = [];
+var camMode = 'user';
 
 export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
   const videoRef = useRef();
@@ -10,15 +11,12 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
   const [mediaRecorder, setMediaRecorder] = useState();
   const [showChat, setShowChat] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [currentCamera, setCurrentCamera] = useState('user');
 
   globalMessages = messages;
 
   const setMediaForNonIos = async () => {
-    console.log('call here for non ios', currentCamera);
-
     let stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: currentCamera },
+      video: { facingMode: mode },
       audio: true,
     });
     setLocalStream(stream);
@@ -26,7 +24,7 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
     videoRef.current.play();
   };
 
-  const setMediaForIos = async () => {
+  const setMediaForIos = async mode => {
     const iframe = document.createElement('iframe');
     iframe.style.display = 'none';
     document.body.appendChild(iframe);
@@ -42,36 +40,39 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
 
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: currentCamera },
+        video: { facingMode: mode },
         audio: true,
       });
       iosVideo.srcObject = mediaStream;
+      iosVideo.muted = true;
     } catch (error) {
       console.log('Error accessing webcam on iOS:', error);
     }
-
-    videoRef.current.srcObject = iosVideo.srcObject;
-    videoRef.current.play();
-    videoRef.current.playsInline = true;
+    if (iosVideo && videoRef.current) {
+      console.log('get set now');
+      setLocalStream(iosVideo?.srcObject);
+      videoRef.current.srcObject = iosVideo?.srcObject;
+      videoRef.current.play();
+      videoRef.current.muted = true;
+      videoRef.current.playsInline = true;
+    }
   };
 
-  const startCamera = async () => {
-    console.log('currentCamera: ', currentCamera);
-    const supports = navigator.mediaDevices.getSupportedConstraints();
-    if (!supports['facingMode']) {
-      alert('This browser does not support facingMode!');
-    }
+  const startCamera = async mode => {
     const iOS =
       !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
     if (iOS) {
-      setMediaForIos();
+      setMediaForIos(mode);
     } else {
-      setMediaForNonIos();
+      setMediaForNonIos(mode);
     }
   };
 
   const startStream = async () => {
     try {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+      }
       socket.emit('startStream', {
         stream_url: streamData?.stream_url,
         stream_id: streamData?.stream_id,
@@ -81,6 +82,8 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
 
       recorder.ondataavailable = event => {
         if (event.data && event.data.size > 0) {
+          console.log('event.data: ', event.data);
+
           socket.emit('streamData', event.data);
         }
       };
@@ -90,9 +93,9 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
       console.error('Error accessing media devices:', error);
     }
   };
+
   const stopStream = () => {
     socket.emit('streamEnd');
-    // console.log('call for stop stream');
     if (mediaRecorder && mediaRecorder.state === 'recording') {
       mediaRecorder.stop();
     }
@@ -103,11 +106,18 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
     handleClose();
   };
   useEffect(() => {
-    startCamera();
+    startCamera('user');
     return () => {
       stopStream();
     };
-  }, [currentCamera]);
+  }, []);
+
+  useEffect(() => {
+    if (localStream && streamStarted) {
+      startStream();
+    }
+    console.log('get change localStream');
+  }, [localStream]);
 
   useEffect(() => {
     socket.on('newMessage', message => {
@@ -121,14 +131,13 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
   const handleCameraSwitch = () => {
     if (localStream) {
       localStream.getTracks().forEach(track => track.stop());
-      setCurrentCamera(prevCamera =>
-        prevCamera === 'user' ? 'environment' : 'user',
-      );
+
+      camMode = camMode === 'user' ? 'environment' : 'user';
+      localStream.getTracks().forEach(track => track.stop());
+      startCamera(camMode);
     } else {
       alert('localstream not found');
     }
-    // stopStream();
-    // setCurrentCamera('environment');
   };
 
   return (
@@ -175,7 +184,9 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
 
             {!streamStarted && (
               <div className="start-top-layer">
-                <button onClick={startStream}>Start stream now!</button>
+                <button onClick={() => setStreamStarted(true)}>
+                  Start stream now!
+                </button>
               </div>
             )}
 

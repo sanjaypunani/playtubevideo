@@ -95,12 +95,12 @@ class MyApp extends App {
   };
 
   getmyIp = () => {
-    axios.get('https://api.ipify.org/?format=json').then(response => {
-      const data = response?.data;
-      axios.get(`http://ip-api.com/json/${data?.ip}`).then(regionData => {
-        console.log('regionData: ', regionData);
-      });
-    });
+    // axios.get('https://api.ipify.org/?format=json').then(response => {
+    //   const data = response?.data;
+    //   axios.get(`http://ip-api.com/json/${data?.ip}`).then(regionData => {
+    //     console.log('regionData: ', regionData);
+    //   });
+    // });
   };
   componentDidMount() {
     this.getmyIp();

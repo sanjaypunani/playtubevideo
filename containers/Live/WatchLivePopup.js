@@ -60,6 +60,7 @@ export const WatchLivePopup = ({ handleClose, open, data, socket }) => {
                   <ReactPlayer
                     ref={liveRef}
                     height={'100%'}
+                    playsinline={true}
                     width={'100vw'}
                     style={{ objectFit: 'cover' }}
                     url={liveStreamUrl}
@@ -79,6 +80,7 @@ export const WatchLivePopup = ({ handleClose, open, data, socket }) => {
                 {streamData?.status !== 'schedule' ? (
                   recordingUrl && (
                     <ReactPlayer
+                      playsinline={true}
                       height={'100%'}
                       width={'100vw'}
                       style={{ objectFit: 'cover' }}

@@ -26,7 +26,7 @@ background-color: black;
   padding: 22px;
   width: 100%;
   position: absolute;
-  bottom: 0;
+  bottom: 60px;
   background-color: rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: space-between;
@@ -162,6 +162,17 @@ background-color: black;
 .close-row-view{
   display: flex;
   justify-content: flex-end;
+}
+
+.close-top-left{
+  /* position: absolute; */
+  /* top: 32px;
+  left: 32px; */
+  padding: 12px;
+  background-color: white;
+  height: 30px;
+  z-index: 9999999;
+  width: 30px;
 }
 .chat-icon-button{
   padding: 4px;
