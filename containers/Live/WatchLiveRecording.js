@@ -19,6 +19,7 @@ export const WatchLiveRecording = ({ handleClose, open, data }) => {
                   style={{ objectFit: 'cover' }}
                   url={recordingUrl}
                   playing
+                  playsinline={true}
                   controls={true}
                 />
               </div>

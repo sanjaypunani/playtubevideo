@@ -70,7 +70,6 @@ export const WatchLivePopup = ({ handleClose, open, data, socket }) => {
                     onReady={() => {
                       setPlaying(true);
                       setMutedStream(false);
-                      console.log('get ready');
                     }}
                   />
                 )}

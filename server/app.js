@@ -557,7 +557,13 @@ registerI18n(server, (t, error) => {
         }
       });
       socket.on('startStream', async data => {
+        const reqData = {
+          stream_id: data?.stream_id,
+          status: 'live',
+        };
+        await livestream.updateLiveStreamStatus(mysqlconnection, reqData);
         const rtmpServer = `rtmp://localhost${data?.stream_url}`;
+
         const ffmpegProcess = spawn('ffmpeg', [
           '-i',
           'pipe:0',

@@ -359,7 +359,6 @@ class Video extends Component {
   };
 
   onHasParentChange = value => {
-    console.log('value: ', value);
     this.setState({
       has_parent: this.state.has_parent === '0' ? '1' : '0',
       localUpdate: true,

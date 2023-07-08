@@ -14,7 +14,7 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
 
   globalMessages = messages;
 
-  const setMediaForNonIos = async () => {
+  const setMediaForNonIos = async mode => {
     let stream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: mode },
       audio: true,
@@ -49,7 +49,6 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
       console.log('Error accessing webcam on iOS:', error);
     }
     if (iosVideo && videoRef.current) {
-      console.log('get set now');
       setLocalStream(iosVideo?.srcObject);
       videoRef.current.srcObject = iosVideo?.srcObject;
       videoRef.current.play();
@@ -73,6 +72,11 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
       if (mediaRecorder && mediaRecorder.state === 'recording') {
         mediaRecorder.stop();
       }
+      console.log(
+        'send start event',
+        streamData?.stream_id,
+        streamData?.stream_url,
+      );
       socket.emit('startStream', {
         stream_url: streamData?.stream_url,
         stream_id: streamData?.stream_id,
@@ -82,8 +86,6 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
 
       recorder.ondataavailable = event => {
         if (event.data && event.data.size > 0) {
-          console.log('event.data: ', event.data);
-
           socket.emit('streamData', event.data);
         }
       };
@@ -116,8 +118,7 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
     if (localStream && streamStarted) {
       startStream();
     }
-    console.log('get change localStream');
-  }, [localStream]);
+  }, [localStream, streamStarted]);
 
   useEffect(() => {
     socket.on('newMessage', message => {

@@ -10,9 +10,13 @@ import { WatchLiveRecording } from './WatchLiveRecording';
 import { useRouter } from 'next/router';
 import { ScheduledStreamPopup } from './ScheduledStreamPopup';
 import Router from 'next/router';
+import { useSelector } from 'react-redux';
 
 export const LiveMainPage = ({ socket }) => {
   const router = useRouter();
+  const { pageInfoData } = useSelector(state => state.general);
+  console.log('login user data', pageInfoData);
+
   const params = router.query;
 
   const [showLiveModel, setShowLiveModel] = useState(false);
@@ -63,7 +67,6 @@ export const LiveMainPage = ({ socket }) => {
 
   useEffect(() => {
     if (params?.watch) {
-      console.log('come here');
       setWatchLiveData({ stream_id: params?.watch });
       const liveButton = document.getElementById(`watch-live-hidden-button`);
       liveButton.click();
@@ -120,15 +123,23 @@ export const LiveMainPage = ({ socket }) => {
     <React.Fragment>
       <div className="user-area live-page-main">
         <button
-          onClick={() => setShowCreateStream(true)}
+          onClick={() => {
+            if (pageInfoData?.loggedInUserDetails) {
+              setShowCreateStream(true);
+            }
+          }}
           data-toggle="modal"
-          data-target="#createstreampopup"
+          data-target={
+            pageInfoData?.loggedInUserDetails
+              ? '#createstreampopup'
+              : '#loginpop'
+          }
         >
           Create Stream
         </button>
 
         <button
-          // style={{ display: 'none' }}
+          style={{ display: 'none' }}
           id="go-live-hidden-button"
           onClick={() => setShowLiveModel(true)}
           data-toggle="modal"
@@ -231,12 +242,9 @@ export const LiveMainPage = ({ socket }) => {
           open={showWatchLive}
           data={watchLiveData}
           handleClose={() => {
-            {
-              Router.push('/live');
-              Router.reload();
-              getPageData();
-              setShowWatchLive(false);
-            }
+            window.location.href = `${window.location.origin}/live`;
+            getPageData();
+            setShowWatchLive(false);
           }}
         />
         {/* )} */}
@@ -247,8 +255,7 @@ export const LiveMainPage = ({ socket }) => {
             open={showWatchRecording}
             data={watchLiveData}
             handleClose={() => {
-              Router.push('/live');
-              Router.reload();
+              window.location.href = `${window.location.origin}/live`;
               getPageData();
               setShowWatchRecording(false);
             }}

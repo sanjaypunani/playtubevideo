@@ -10,14 +10,15 @@ export const ScheduledStreamPopup = ({ handleClose, open, data }) => {
   }, [data]);
 
   const onGoLive = () => {
-    axios
-      .put(`/api/lives/${data?.stream_id}`, { status: 'live' })
-      .then(res => {
-        handleClose({ isSuccess: true, streamData: data });
-      })
-      .catch(error => {
-        console.log('error:', error);
-      });
+    handleClose({ isSuccess: true, streamData: data });
+    // axios
+    //   .put(`/api/lives/${data?.stream_id}`, { status: 'live' })
+    //   .then(res => {
+    //     handleClose({ isSuccess: true, streamData: data });
+    //   })
+    //   .catch(error => {
+    //     console.log('error:', error);
+    //   });
   };
 
   return (

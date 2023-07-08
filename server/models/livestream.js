@@ -84,7 +84,11 @@ module.exports = {
         let query = 'SELECT * FROM live_stream';
         if (status) {
           query = query + ` WHERE status = '${status}'`;
+          if (status === 'schedule') {
+            query = query + `AND owner = ${req?.user?.user_id || -1}`;
+          }
         }
+        console.log('get sql quary', query);
         connection.query(query, function (err, results) {
           if (err) {
             resolve(false);
