@@ -15,7 +15,6 @@ import { useSelector } from 'react-redux';
 export const LiveMainPage = ({ socket }) => {
   const router = useRouter();
   const { pageInfoData } = useSelector(state => state.general);
-  console.log('login user data', pageInfoData);
 
   const params = router.query;
 
@@ -139,7 +138,7 @@ export const LiveMainPage = ({ socket }) => {
         </button>
 
         <button
-          // style={{ display: 'none' }}
+          style={{ display: 'none' }}
           id="go-live-hidden-button"
           onClick={() => setShowLiveModel(true)}
           data-toggle="modal"
