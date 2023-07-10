@@ -58,11 +58,11 @@ const config = {
     port: 8000,
     allow_origin: '*',
   },
-  https: {
-    port: 8443,
-    key: '/etc/letsencrypt/live/govup.inqtube.com/privkey.pem',
-    cert: '/etc/letsencrypt/live/govup.inqtube.com/fullchain.pem',
-  },
+  // https: {
+  //   port: 8443,
+  //   key: '/etc/letsencrypt/live/govup.inqtube.com/privkey.pem',
+  //   cert: '/etc/letsencrypt/live/govup.inqtube.com/fullchain.pem',
+  // },
 };
 
 registerI18n(server, (t, error) => {
@@ -556,33 +556,125 @@ registerI18n(server, (t, error) => {
             console.log(e, 'leaveRoom');
         }
       });
+
       socket.on('startStream', async data => {
+        var ffmpegProcess = null;
+
+        console.log('get stream start call again');
         const reqData = {
           stream_id: data?.stream_id,
           status: 'live',
         };
         await livestream.updateLiveStreamStatus(mysqlconnection, reqData);
         const rtmpServer = `rtmp://localhost${data?.stream_url}`;
+        // if (ffmpegProcess) {
+        //   ffmpegProcess.kill();
+        // }
 
-        const ffmpegProcess = spawn('ffmpeg', [
+        ffmpegProcess = spawn('ffmpeg', [
+          '-re',
           '-i',
           'pipe:0',
           '-c:v',
           'libx264',
-          '-preset',
-          'ultrafast',
+          // '-preset',
+          // 'ultrafast',
           '-c:a',
           'aac',
-          '-ar',
-          '44100',
+          // '-vsync',
+          // '0',
+          // '-ar',
+          // '44100',
           '-f',
+          // 'fifo',
+          // '-fifo_format',
           'flv',
+          // '-map',
+          // '0:v',
+          // '-map',
+          // '0:a',
+          // '-drop_pkts_on_overflow',
+          // '1',
+          // '-attempt_recovery',
+          // '1',
+          // '-recovery_wait_time',
+          // '1',
           rtmpServer,
         ]);
 
+        // socket.on('changeCamera', () => {
+        //   socket.off('streamData', () => {
+        //     console.log('is off now');
+        //   });
+
+        //   ffmpegProcess.kill();
+        //   ffmpegProcess = null;
+        //   ffmpegStaus = 'Now it pass from change cam';
+        //   const NewffmpegProcess = spawn('ffmpeg', [
+        //     '-i',
+        //     'pipe:0',
+        //     '-c:v',
+        //     'libx264',
+        //     '-preset',
+        //     'ultrafast',
+        //     '-c:a',
+        //     'aac',
+        //     '-ar',
+        //     '44100',
+        //     '-f',
+        //     'flv',
+        //     rtmpServer,
+        //   ]);
+        //   socket.on('streamData', stream => {
+        //     console.log('stream: is in new', stream);
+        //     if (NewffmpegProcess) {
+        //       NewffmpegProcess.stdin.write(stream);
+        //     }
+        //   });
+        // });
+
         socket.on('streamData', stream => {
-          ffmpegProcess.stdin.write(stream);
+          console.log('stream: is in main', stream);
+          if (ffmpegProcess) {
+            ffmpegProcess.stdin.write(stream);
+          }
         });
+
+        // ffmpegProcess.on('spawn', () => {
+        //   console.log('FFmpeg process started');
+        // });
+
+        // // Event: When ffmpeg outputs data
+        // ffmpegProcess.stdout.on('data', data => {
+        //   console.log(`FFmpeg stdout: ${data}`);
+        // });
+
+        // Event: When ffmpeg encounters an error
+        // ffmpegProcess.stderr.on('data', data => {
+        //   console.error(`FFmpeg stderr: ${data}`);
+        // });
+        ffmpegProcess.stderr.on('data', err => {
+          console.error(`FFmpeg stderr: ${err}`);
+        });
+
+        // // Event: When ffmpeg process exits
+        // ffmpegProcess.on('exit', (code, signal) => {
+        //   console.log(
+        //     `FFmpeg process exited with code ${code} and signal ${signal}`,
+        //   );
+        // });
+
+        // // Event: When ffmpeg process finishes
+        // ffmpegProcess.on('close', (code, signal) => {
+        //   console.log(
+        //     `FFmpeg process closed with code ${code} and signal ${signal}`,
+        //   );
+        // });
+
+        // // Event: When ffmpeg process is terminated
+        // ffmpegProcess.on('disconnect', () => {
+        //   console.log('FFmpeg process disconnected');
+        // });
 
         const args = [
           '-i',
@@ -600,11 +692,12 @@ registerI18n(server, (t, error) => {
           // console.log(data.toString());
         });
 
-        recoardFfmpegProcess.stderr.on('data', data => {
+        recoardFfmpegProcess.stderr.on('error', data => {
           console.error(data.toString());
         });
 
         socket.on('streamEnd', () => {
+          console.log('get call for stream end');
           ffmpegProcess.kill();
         });
 

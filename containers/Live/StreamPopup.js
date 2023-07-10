@@ -7,12 +7,41 @@ var camMode = 'user';
 export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
   const videoRef = useRef();
   const [streamStarted, setStreamStarted] = useState(false);
+  const [streamEventSentToServer, setStreamEventSentToServer] = useState(false);
   const [localStream, setLocalStream] = useState();
+  const mediaRef = useRef();
   const [mediaRecorder, setMediaRecorder] = useState();
   const [showChat, setShowChat] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [activeCamera, setActiveCamera] = useState('user');
+  const [cameraDevices, setCameraDevices] = useState([
+    {
+      lable: 'Front Camera',
+      devicesId: 'front',
+      facingMode: 'user',
+    },
+    {
+      lable: 'Back Camera',
+      devicesId: 'back',
+      facingMode: 'environment',
+    },
+  ]);
 
   globalMessages = messages;
+
+  const getAvailableCameras = () => {
+    navigator.mediaDevices
+      .enumerateDevices()
+      .then(devices => {
+        const videoDevices = devices.filter(
+          device => device.kind === 'videoinput',
+        );
+        // setCameraDevices(videoDevices);
+      })
+      .catch(error => {
+        console.error('Error enumerating devices:', error);
+      });
+  };
 
   const setMediaForNonIos = async mode => {
     let stream = await navigator.mediaDevices.getUserMedia({
@@ -43,12 +72,29 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
         video: { facingMode: mode },
         audio: true,
       });
+
       iosVideo.srcObject = mediaStream;
+      mediaStream.getVideoTracks()[0].getSettings;
       iosVideo.muted = true;
     } catch (error) {
       console.log('Error accessing webcam on iOS:', error);
     }
     if (iosVideo && videoRef.current) {
+      // if (localStream) {
+      //   const oldVideoTrack = localStream?.getVideoTracks()[0];
+      //   console.log('oldVideoTrack: ', oldVideoTrack);
+      //   const oldVideoSettings = oldVideoTrack.getSettings();
+      //   console.log('oldVideoSettings: ', oldVideoSettings);
+
+      //   const newVideoTrack = iosVideo?.srcObject.getVideoTracks()[0];
+      //   console.log('newVideoTrack: ', newVideoTrack);
+      //   const newVideoSettings = newVideoTrack.getSettings();
+      //   console.log('newVideoSettings: ', newVideoSettings);
+      //   newVideoSettings.timestamp = oldVideoSettings.timestamp;
+      //   console.log('newVideoSettings: after update', newVideoSettings);
+      //   newVideoTrack.applyConstraints(newVideoSettings);
+      // }
+
       setLocalStream(iosVideo?.srcObject);
       videoRef.current.srcObject = iosVideo?.srcObject;
       videoRef.current.play();
@@ -69,19 +115,25 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
 
   const startStream = async () => {
     try {
-      if (mediaRecorder && mediaRecorder.state === 'recording') {
+      if (mediaRecorder) {
         mediaRecorder.stop();
       }
-      console.log(
-        'send start event',
-        streamData?.stream_id,
-        streamData?.stream_url,
-      );
-      socket.emit('startStream', {
-        stream_url: streamData?.stream_url,
-        stream_id: streamData?.stream_id,
-      });
-      setStreamStarted(true);
+      if (!streamEventSentToServer) {
+        setStreamEventSentToServer(true);
+        socket.emit('startStream', {
+          stream_url: streamData?.stream_url,
+          stream_id: streamData?.stream_id,
+        });
+      } else {
+        socket.emit('changeCamera');
+        // setTimeout(() => {
+        //   socket.emit('startStream', {
+        //     stream_url: streamData?.stream_url,
+        //     stream_id: streamData?.stream_id,
+        //   });
+        // }, 3000);
+      }
+
       let recorder = new MediaRecorder(localStream);
 
       recorder.ondataavailable = event => {
@@ -108,7 +160,14 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
     handleClose();
   };
   useEffect(() => {
-    startCamera('user');
+    if (localStream) {
+      localStream.getTracks().forEach(track => track.stop());
+    }
+    startCamera(activeCamera);
+  }, [activeCamera]);
+
+  useEffect(() => {
+    // getAvailableCameras();
     return () => {
       stopStream();
     };
@@ -118,7 +177,7 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
     if (localStream && streamStarted) {
       startStream();
     }
-  }, [localStream, streamStarted]);
+  }, [streamStarted, localStream]);
 
   useEffect(() => {
     socket.on('newMessage', message => {
@@ -129,17 +188,17 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
     socket.emit('joinLiveStream', streamData?.stream_id.toString());
   }, []);
 
-  const handleCameraSwitch = () => {
-    if (localStream) {
-      localStream.getTracks().forEach(track => track.stop());
+  // const handleCameraSwitch = () => {
+  //   if (localStream) {
+  //     localStream.getTracks().forEach(track => track.stop());
 
-      camMode = camMode === 'user' ? 'environment' : 'user';
-      localStream.getTracks().forEach(track => track.stop());
-      startCamera(camMode);
-    } else {
-      alert('localstream not found');
-    }
-  };
+  //     camMode = camMode === 'user' ? 'environment' : 'user';
+  //     localStream.getTracks().forEach(track => track.stop());
+  //     startCamera(camMode);
+  //   } else {
+  //     alert('localstream not found');
+  //   }
+  // };
 
   return (
     <div className={`modal ${open ? 'show' : ''}`} id="golivepopup">
@@ -159,7 +218,8 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
             {/* Footer */}
             {streamStarted && (
               <div className="footer-view">
-                <div
+                <div />
+                {/* <div
                   onClick={() => handleCameraSwitch()}
                   className="chat-icon-button"
                 >
@@ -167,7 +227,7 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
                     style={{ fontSize: 24, color: 'white' }}
                     class="fa fa-camera"
                   ></i>
-                </div>
+                </div> */}
                 <button type="button" data-dismiss="modal" onClick={stopStream}>
                   End
                 </button>
@@ -185,8 +245,58 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
 
             {!streamStarted && (
               <div className="start-top-layer">
-                <button onClick={() => setStreamStarted(true)}>
-                  Start stream now!
+                <div style={{ padding: 22 }} className="container">
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                    }}
+                    className="row"
+                  >
+                    {cameraDevices?.map(item => {
+                      return (
+                        <div
+                          onClick={() => setActiveCamera(item.facingMode)}
+                          className="camera-select-box"
+                          style={{
+                            backgroundColor:
+                              activeCamera === item?.facingMode
+                                ? 'white'
+                                : 'gray',
+                          }}
+                        >
+                          <i
+                            style={{
+                              color:
+                                activeCamera === item?.facingMode
+                                  ? 'black'
+                                  : 'white',
+                            }}
+                            className="fa fa-camera camera-icon"
+                          ></i>
+                          <span
+                            style={{
+                              color:
+                                activeCamera === item?.facingMode
+                                  ? 'black'
+                                  : 'white',
+                            }}
+                            className="camera-name-text"
+                          >
+                            {item?.lable}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                <button
+                  style={{ marginTop: 22 }}
+                  onClick={() => setStreamStarted(true)}
+                >
+                  Start Stream
                 </button>
               </div>
             )}
