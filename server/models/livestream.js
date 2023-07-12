@@ -81,13 +81,19 @@ module.exports = {
     return new Promise(function (resolve, reject) {
       req.getConnection(function (err, connection) {
         const status = req?.query?.status;
+        const user = req?.query?.user;
         let query = 'SELECT * FROM live_stream';
         if (status) {
           query = query + ` WHERE status = '${status}'`;
           if (status === 'schedule') {
             query = query + `AND owner = ${req?.user?.user_id || -1}`;
           }
+
+          if (user === 'me') {
+            query = query + `AND owner = ${req?.user?.user_id || -1}`;
+          }
         }
+
         console.log('get sql quary', query);
         connection.query(query, function (err, results) {
           if (err) {
@@ -139,7 +145,7 @@ module.exports = {
         let insertData = [];
         const data = req?.body;
         const poster = `/images/upload/images/lives/posters/${req.fileName}`;
-        const recordingPath = `/recording/${data.stream_id}.mp4`;
+        const recordingPath = `/recording/${data.stream_id}/${data.stream_id}.m3u8`;
         insertData.push(data.stream_id);
         insertData.push(data.user_id);
         insertData.push(data.stream_url);

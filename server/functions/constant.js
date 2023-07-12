@@ -163,54 +163,62 @@ const languages = [
   {
     name: 'Hindi',
     value: 'hindi',
+    region: [''],
   },
   {
     name: 'Bengali',
     value: 'bengali',
-  },
-  {
-    name: 'Urdu',
-    value: 'urdu',
+    region: ['West Bengal', 'Tripura'],
   },
   {
     name: 'Punjabi',
     value: 'punjabi',
+    region: ['Punjab'],
   },
   {
     name: 'Marathi',
     value: 'marathi',
+    region: ['Maharashtra'],
   },
   {
     name: 'Telugu',
     value: 'telugu',
+    region: ['Andhra Pradesh', 'Telangana'],
   },
   {
     name: 'Tamil',
     value: 'tamil',
+    region: ['Tamil Nadu'],
   },
   {
     name: 'Gujarati',
     value: 'gujarati',
+    region: ['Gujarat'],
   },
   {
     name: 'Kannada',
     value: 'kannada',
+    region: ['Karnataka'],
   },
   {
     name: 'Odia',
     value: 'odia',
+    region: ['Odisha'],
   },
   {
     name: 'Malayalam',
     value: 'malayalam',
+    region: ['Kerala'],
   },
   {
     name: 'Assamese',
     value: 'assamese',
+    region: ['Assam'],
   },
   {
     name: 'Santali',
     value: 'santali',
+    region: ['Jharkhand'],
   },
 ];
 

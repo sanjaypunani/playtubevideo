@@ -56,15 +56,21 @@ export const WatchLivePopup = ({ handleClose, open, data, socket }) => {
                 style={{ height: 'calc(100vh - 80px)', marginBottom: 132 }}
                 className="camera-view"
               >
-                {liveStreamUrl && (
+                {recordingUrl && (
                   <ReactPlayer
                     ref={liveRef}
                     height={'100%'}
                     playsinline={true}
                     width={'100vw'}
                     style={{ objectFit: 'cover' }}
-                    url={liveStreamUrl}
+                    // url={liveStreamUrl}
+                    url={recordingUrl}
                     playing={playing}
+                    // config={{
+                    //   file: {
+                    //     forceFLV: true,
+                    //   },
+                    // }}
                     muted={mutedStream}
                     controls={true}
                     onReady={() => {

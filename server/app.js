@@ -14,6 +14,7 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var MySQLStore = require('express-mysql-session')(session);
 const { spawn } = require('child_process');
+const fs = require('fs');
 
 if (process.env.NODE_ENV != 'development') {
   require('dotenv').config();
@@ -46,6 +47,21 @@ if (process.env.JAWSDB_URL) {
   dataPortDb = data[2].split('/');
 }
 
+var makeDirectory = function (dirPath, mode, callback) {
+  //Call the standard fs.mkdir
+  fs.mkdir(dirPath, mode, function (error) {
+    //When it fail in this way, do the custom steps
+    if (error && error.errno === 34) {
+      //Create all the parents recursively
+      fs.mkdirParent(path.dirname(dirPath), mode, callback);
+      //And then the directory
+      fs.mkdirParent(dirPath, mode, callback);
+    }
+    //Manually run the callback since we used our own callback to do all these
+    callback && callback(error);
+  });
+};
+
 const config = {
   rtmp: {
     port: 1935,
@@ -58,11 +74,11 @@ const config = {
     port: 8000,
     allow_origin: '*',
   },
-  https: {
-    port: 8443,
-    key: '/etc/letsencrypt/live/govup.inqtube.com/privkey.pem',
-    cert: '/etc/letsencrypt/live/govup.inqtube.com/fullchain.pem',
-  },
+  // https: {
+  //   port: 8443,
+  //   key: '/etc/letsencrypt/live/govup.inqtube.com/privkey.pem',
+  //   cert: '/etc/letsencrypt/live/govup.inqtube.com/fullchain.pem',
+  // },
 };
 
 registerI18n(server, (t, error) => {
@@ -560,16 +576,7 @@ registerI18n(server, (t, error) => {
       socket.on('startStream', async data => {
         var ffmpegProcess = null;
 
-        console.log('get stream start call again');
-        const reqData = {
-          stream_id: data?.stream_id,
-          status: 'live',
-        };
-        await livestream.updateLiveStreamStatus(mysqlconnection, reqData);
         const rtmpServer = `rtmp://localhost${data?.stream_url}`;
-        // if (ffmpegProcess) {
-        //   ffmpegProcess.kill();
-        // }
 
         ffmpegProcess = spawn('ffmpeg', [
           '-re',
@@ -602,99 +609,52 @@ registerI18n(server, (t, error) => {
           rtmpServer,
         ]);
 
-        // socket.on('changeCamera', () => {
-        //   socket.off('streamData', () => {
-        //     console.log('is off now');
-        //   });
-
-        //   ffmpegProcess.kill();
-        //   ffmpegProcess = null;
-        //   ffmpegStaus = 'Now it pass from change cam';
-        //   const NewffmpegProcess = spawn('ffmpeg', [
-        //     '-i',
-        //     'pipe:0',
-        //     '-c:v',
-        //     'libx264',
-        //     '-preset',
-        //     'ultrafast',
-        //     '-c:a',
-        //     'aac',
-        //     '-ar',
-        //     '44100',
-        //     '-f',
-        //     'flv',
-        //     rtmpServer,
-        //   ]);
-        //   socket.on('streamData', stream => {
-        //     console.log('stream: is in new', stream);
-        //     if (NewffmpegProcess) {
-        //       NewffmpegProcess.stdin.write(stream);
-        //     }
-        //   });
-        // });
-
         socket.on('streamData', stream => {
-          console.log('stream: is in main', stream);
+          // console.log('stream: is in main', stream);
           if (ffmpegProcess) {
             ffmpegProcess.stdin.write(stream);
           }
         });
 
-        // ffmpegProcess.on('spawn', () => {
-        //   console.log('FFmpeg process started');
-        // });
-
-        // // Event: When ffmpeg outputs data
-        // ffmpegProcess.stdout.on('data', data => {
-        //   console.log(`FFmpeg stdout: ${data}`);
-        // });
-
-        // Event: When ffmpeg encounters an error
-        // ffmpegProcess.stderr.on('data', data => {
-        //   console.error(`FFmpeg stderr: ${data}`);
-        // });
         ffmpegProcess.stderr.on('data', err => {
-          console.error(`FFmpeg stderr: ${err}`);
+          // console.error(`FFmpeg stderr: ${err}`);
         });
 
-        // // Event: When ffmpeg process exits
-        // ffmpegProcess.on('exit', (code, signal) => {
-        //   console.log(
-        //     `FFmpeg process exited with code ${code} and signal ${signal}`,
-        //   );
-        // });
+        let fileName = data?.stream_id;
+        const hslFilePath = `./recording/${data?.stream_id}`;
+        if (!fs.existsSync(hslFilePath)) {
+          makeDirectory(hslFilePath, '0777');
+        }
 
-        // // Event: When ffmpeg process finishes
-        // ffmpegProcess.on('close', (code, signal) => {
-        //   console.log(
-        //     `FFmpeg process closed with code ${code} and signal ${signal}`,
-        //   );
-        // });
-
-        // // Event: When ffmpeg process is terminated
-        // ffmpegProcess.on('disconnect', () => {
-        //   console.log('FFmpeg process disconnected');
-        // });
-
-        const args = [
+        const ffmpegHslProcess = spawn('ffmpeg', [
           '-i',
-          rtmpServer,
+          rtmpServer, // Replace 'input.flv' with your FLV stream source
           '-c:v',
-          'copy', // Copy video stream
+          'copy', // Copy the video codec
           '-c:a',
-          'copy', // Copy audio stream
-          `./recording/${data?.stream_id}.mp4`, // Relative file path to store in the project directory
-        ];
+          'copy', // Copy the audio codec
+          '-hls_time',
+          '10', // Set segment duration (in seconds)
+          '-hls_list_size',
+          '6', // Set maximum number of playlist entries
+          '-hls_segment_filename',
+          `${hslFilePath}/${fileName}%03d.ts`, // Output segment filename pattern
+          `${hslFilePath}/${fileName}.m3u8`, // Output HLS playlist filename
+        ]);
 
-        const recoardFfmpegProcess = spawn('ffmpeg', args);
+        ffmpegHslProcess.stderr.on('data', data => {});
 
-        recoardFfmpegProcess.stdout.on('data', data => {
-          // console.log(data.toString());
-        });
-
-        recoardFfmpegProcess.stderr.on('error', data => {
-          console.error(data.toString());
-        });
+        let streamFileCheckInterval = setInterval(async () => {
+          if (fs.existsSync(`${hslFilePath}/${fileName}.m3u8`)) {
+            clearInterval(streamFileCheckInterval);
+            const reqData = {
+              stream_id: data?.stream_id,
+              status: 'live',
+            };
+            await livestream.updateLiveStreamStatus(mysqlconnection, reqData);
+            io.emit('update_live');
+          }
+        }, 1000);
 
         socket.on('streamEnd', () => {
           console.log('get call for stream end');
@@ -731,14 +691,6 @@ registerI18n(server, (t, error) => {
         const nms = new NodeMediaServer(config);
         nms.run();
         nms.on('prePublish', async (id, streamPath, args) => {
-          const reqData = {
-            stream_id: id,
-            user_id: 123,
-            stream_url: streamPath,
-            poster:
-              'https://cdn.pixabay.com/photo/2014/02/27/16/10/flowers-276014_1280.jpg',
-          };
-          // await livestream.createLiveStream(mysqlconnection, reqData);
           io.emit('update_live', {
             action: 'new_live',
             data: { stream_id: id, stream_path: streamPath },

@@ -13,6 +13,7 @@ import MiniPlayer from '../containers/Video/MiniPlayer';
 import AudioPlayer from '../containers/Audio/Player';
 import Head from 'next/head';
 import axios from 'axios';
+import { languages } from '../server/functions/constant';
 
 const socket = socketOpen(config.app_server);
 registerI18n(Router);
@@ -21,7 +22,16 @@ registerI18n(Router);
 class MyApp extends App {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      isLanguageSet:
+        typeof window != 'undefined' && localStorage.getItem('ip_language')
+          ? true
+          : false,
+      ip_language:
+        typeof window != 'undefined' && localStorage.getItem('ip_language')
+          ? localStorage.getItem('ip_language')
+          : '',
+    };
   }
   static async getInitialProps({ Component, ctx }) {
     // Recompile pre-existing pageProps
@@ -95,12 +105,31 @@ class MyApp extends App {
   };
 
   getmyIp = () => {
-    // axios.get('https://api.ipify.org/?format=json').then(response => {
-    //   const data = response?.data;
-    //   axios.get(`http://ip-api.com/json/${data?.ip}`).then(regionData => {
-    //     console.log('regionData: ', regionData);
-    //   });
-    // });
+    axios.get('/api/get-my-ip-info').then(response => {
+      const data = response?.data;
+      this.setState({ isLanguageSet: true });
+      const language = languages.find(item => {
+        if (item?.region?.findIndex(e => e === data?.regionName) !== -1) {
+          return true;
+        }
+        return false;
+      })?.value;
+      if (language) {
+        localStorage.setItem('ip_language', language);
+
+        this.setState({
+          isLanguageSet: true,
+          ip_language: language,
+        });
+      } else {
+        localStorage.setItem('ip_language', 'hindi');
+
+        this.setState({
+          isLanguageSet: true,
+          ip_language: 'hindi',
+        });
+      }
+    });
   };
   componentDidMount() {
     this.getmyIp();
@@ -141,21 +170,46 @@ class MyApp extends App {
               content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
             ></meta>
           </Head>
-          <Component
-            {...pageProps}
-            isMobile={isMobile ? 992 : 993}
-            socket={socket}
-          />
-          <MiniPlayer
-            {...pageProps}
-            isMobile={isMobile ? 992 : 993}
-            socket={socket}
-          />
-          <AudioPlayer
-            {...pageProps}
-            isMobile={isMobile ? 992 : 993}
-            socket={socket}
-          />
+          {/* {this.state.isLanguageSet ? ( */}
+          <>
+            <Component
+              {...pageProps}
+              isMobile={isMobile ? 992 : 993}
+              socket={socket}
+              ip_language={this.state.ip_language}
+            />
+            <MiniPlayer
+              {...pageProps}
+              isMobile={isMobile ? 992 : 993}
+              socket={socket}
+              ip_language={this.state.ip_language}
+            />
+            <AudioPlayer
+              {...pageProps}
+              isMobile={isMobile ? 992 : 993}
+              socket={socket}
+              ip_language={this.state.ip_language}
+            />
+          </>
+          {/* ) : ( */}
+          {!this.state.isLanguageSet && (
+            <div
+              style={{
+                display: 'flex',
+                position: 'absolute',
+                top: 0,
+                width: '100%',
+                height: '100vh',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'rgba(0,0,0,0.7)',
+                zIndex: 99999999,
+              }}
+            >
+              <h1 style={{ color: 'white' }}>Initializing language...</h1>
+            </div>
+          )}
+          {/* )} */}
         </I18nextProvider>
       </React.Fragment>
     );

@@ -62,7 +62,7 @@ export const CreateStreamPopup = ({ handleClose, open, data }) => {
       formData.append('description', streamData?.description);
       formData.append('stream_id', streamId);
       formData.append('stream_url', streamUrl);
-      formData.append('status', status);
+      formData.append('status', 'schedule');
       formData.append(
         'schedule_date_time',
         moment(

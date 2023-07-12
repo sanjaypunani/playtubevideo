@@ -18,7 +18,12 @@ export const ChatRoomBox = ({ handleClose, socket, messages, streamData }) => {
     <div className="chat-box-main">
       <div className="chat-message-list">
         <div className="close-row-view">
-          <button onClick={handleClose} type="button" className="close">
+          <button
+            style={{ color: 'white', height: 32, width: 32 }}
+            onClick={handleClose}
+            type="button"
+            className="close"
+          >
             &times;
           </button>
         </div>
@@ -36,6 +41,17 @@ export const ChatRoomBox = ({ handleClose, socket, messages, streamData }) => {
         })}
       </div>
       <div className="footer-chat">
+        <div className="close-row-view">
+          <button
+            style={{ color: 'white', height: 32, width: 32 }}
+            onClick={handleClose}
+            type="button"
+            className="close"
+          >
+            &times;
+          </button>
+        </div>
+
         <input
           onChange={e => setMessageText(e.target.value)}
           value={messageText}

@@ -112,7 +112,7 @@ background-color: black;
   top: 0px;
   height: 100%;
   width: 380px;
-  background-color: white; 
+  background-color: rgba(0,0,0,0.3); 
   padding: 18px;
   display: flex;
   flex-direction: column;
@@ -146,6 +146,7 @@ background-color: black;
 .footer-chat{
   display: flex;
   flex-direction: row;
+  /* background-color: white; */
 }
 
 .message-input{

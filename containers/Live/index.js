@@ -27,6 +27,7 @@ export const LiveMainPage = ({ socket }) => {
   const [scheduledStreamData, setSchedulesStreamData] = useState();
   const [lives, setLives] = useState([]);
   const [schedules, setSchedules] = useState([]);
+  const [myRecordings, setMyRecording] = useState([]);
   const [recordings, setRecordings] = useState([]);
   const [watchLiveData, setWatchLiveData] = useState();
 
@@ -51,10 +52,18 @@ export const LiveMainPage = ({ socket }) => {
     });
   };
 
+  const getMyRecordedStreams = () => {
+    const url = '/api/lives?status=end&user=me';
+    axios.get(url).then(res => {
+      setMyRecording(res?.data?.streams);
+    });
+  };
+
   const getPageData = () => {
     getLiveStreams();
     getRecordedStreams();
     getScheduledStream();
+    getMyRecordedStreams();
   };
 
   useEffect(() => {
@@ -72,7 +81,14 @@ export const LiveMainPage = ({ socket }) => {
     }
   }, [params]);
 
-  const StreamVideoCard = ({ item }) => {
+  const onDeleteStream = stream_id => {
+    const url = `/api/lives/${stream_id}`;
+    axios.delete(url).then(res => {
+      getPageData();
+    });
+  };
+
+  const StreamVideoCard = ({ item, isMy }) => {
     return (
       <div
         // id={`watchlivepopup_${item?.stream_id}`}
@@ -110,11 +126,27 @@ export const LiveMainPage = ({ socket }) => {
             </div>
           )}
         </div>
-        <h6 className="stream-title">{item?.name}</h6>
-        <span className="stream-details">{item?.description}</span>
-        <span className="stream-date">
-          {moment(item?.creation_date).format('DD/MM/YYYY hh:mm')}
-        </span>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <h6 className="stream-title">{item?.name}</h6>
+            <span className="stream-details">{item?.description}</span>
+            <span className="stream-date">
+              {moment(item?.creation_date).format('DD/MM/YYYY hh:mm')}
+            </span>
+          </div>
+
+          {isMy && (
+            <button
+              onClick={e => {
+                e.stopPropagation();
+                onDeleteStream(item?.stream_id);
+              }}
+              style={{ height: 38, marginTop: 12 }}
+            >
+              Delete
+            </button>
+          )}
+        </div>
       </div>
     );
   };
@@ -138,7 +170,7 @@ export const LiveMainPage = ({ socket }) => {
         </button>
 
         <button
-          style={{ display: 'none' }}
+          // style={{ display: 'none' }}
           id="go-live-hidden-button"
           onClick={() => setShowLiveModel(true)}
           data-toggle="modal"
@@ -208,7 +240,7 @@ export const LiveMainPage = ({ socket }) => {
               <span className="recent_video">
                 <span className="material-icons">video_library</span>
               </span>
-              Recordings
+              All Recordings
             </React.Fragment>
           </span>
         </div>
@@ -218,6 +250,28 @@ export const LiveMainPage = ({ socket }) => {
               return (
                 <div className="col-md-3">
                   <StreamVideoCard item={live} />
+                </div>
+              );
+            })}
+        </div>
+
+        <div style={{ height: 18 }} />
+        <div className="titleWrap">
+          <span className="title">
+            <React.Fragment>
+              <span className="recent_video">
+                <span className="material-icons">video_library</span>
+              </span>
+              My Recordings
+            </React.Fragment>
+          </span>
+        </div>
+        <div className="row">
+          {myRecordings &&
+            myRecordings?.map(live => {
+              return (
+                <div className="col-md-3">
+                  <StreamVideoCard isMy={true} item={live} />
                 </div>
               );
             })}
