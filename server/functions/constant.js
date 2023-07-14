@@ -163,7 +163,7 @@ const languages = [
   {
     name: 'Hindi',
     value: 'hindi',
-    region: [''],
+    region: ['Haryana'],
   },
   {
     name: 'Bengali',

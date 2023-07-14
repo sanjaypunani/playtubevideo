@@ -170,7 +170,7 @@ export const LiveMainPage = ({ socket }) => {
         </button>
 
         <button
-          // style={{ display: 'none' }}
+          style={{ display: 'none' }}
           id="go-live-hidden-button"
           onClick={() => setShowLiveModel(true)}
           data-toggle="modal"

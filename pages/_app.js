@@ -23,14 +23,8 @@ class MyApp extends App {
   constructor(props) {
     super(props);
     this.state = {
-      isLanguageSet:
-        typeof window != 'undefined' && localStorage.getItem('ip_language')
-          ? true
-          : false,
-      ip_language:
-        typeof window != 'undefined' && localStorage.getItem('ip_language')
-          ? localStorage.getItem('ip_language')
-          : '',
+      languageLoading: false,
+      ip_language: '',
     };
   }
   static async getInitialProps({ Component, ctx }) {
@@ -105,30 +99,40 @@ class MyApp extends App {
   };
 
   getmyIp = () => {
-    axios.get('/api/get-my-ip-info').then(response => {
+    if (!localStorage.getItem('ip_language')) {
+      this.setState({ languageLoading: true });
+    } else {
+      this.setState({
+        ip_language: localStorage.getItem('ip_language'),
+      });
+    }
+    axios.get('https://api.ipify.org/?format=json').then(response => {
       const data = response?.data;
-      this.setState({ isLanguageSet: true });
-      const language = languages.find(item => {
-        if (item?.region?.findIndex(e => e === data?.regionName) !== -1) {
-          return true;
+      axios.get(`/api/get-my-ip-info/${data?.ip}`).then(response => {
+        const data = response?.data;
+        this.setState({ isLanguageSet: true });
+        const language = languages.find(item => {
+          if (item?.region?.findIndex(e => e === data?.regionName) !== -1) {
+            return true;
+          }
+          return false;
+        })?.value;
+        if (language) {
+          localStorage.setItem('ip_language', language);
+
+          this.setState({
+            languageLoading: false,
+            ip_language: language,
+          });
+        } else {
+          localStorage.setItem('ip_language', 'hindi');
+
+          this.setState({
+            languageLoading: false,
+            ip_language: 'hindi',
+          });
         }
-        return false;
-      })?.value;
-      if (language) {
-        localStorage.setItem('ip_language', language);
-
-        this.setState({
-          isLanguageSet: true,
-          ip_language: language,
-        });
-      } else {
-        localStorage.setItem('ip_language', 'hindi');
-
-        this.setState({
-          isLanguageSet: true,
-          ip_language: 'hindi',
-        });
-      }
+      });
     });
   };
   componentDidMount() {
@@ -192,7 +196,7 @@ class MyApp extends App {
             />
           </>
           {/* ) : ( */}
-          {!this.state.isLanguageSet && (
+          {this.state.languageLoading && (
             <div
               style={{
                 display: 'flex',
