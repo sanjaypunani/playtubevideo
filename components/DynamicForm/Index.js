@@ -475,6 +475,7 @@ export default class DynamicForm extends React.Component {
       input = (
         <select
           value={value}
+          disabled={m?.disabled}
           className="form-control"
           onChange={e => {
             this.onChange(e, m.key, 'single', type, m);

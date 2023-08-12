@@ -222,6 +222,43 @@ const languages = [
   },
 ];
 
+const subDomains = [
+  {
+    slug: 'rbi',
+    title: 'RBI',
+  },
+
+  {
+    slug: 'govt',
+    title: 'GOVT',
+  },
+
+  {
+    slug: 'govup',
+    title: 'GOVUP',
+  },
+
+  {
+    slug: 'Congress',
+    title: 'CONGRESS',
+  },
+
+  {
+    slug: 'subharti',
+    title: 'SUBHARTI',
+  },
+
+  {
+    slug: 'pnb',
+    title: 'PNB',
+  },
+
+  {
+    slug: 'aubank',
+    title: 'AUBANK',
+  },
+];
+
 module.exports = {
   audio: audio,
   auth: auth,
@@ -237,4 +274,5 @@ module.exports = {
   ads: ads,
   languageLable: languageLable,
   languages: languages,
+  subDomains: subDomains,
 };

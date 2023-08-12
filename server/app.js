@@ -37,6 +37,8 @@ const { registerI18n } = require('../i18n-server');
 var cron = require('node-cron');
 var videoModel = require('./models/videos');
 const livestream = require('./models/livestream');
+const categoriesModel = require('./models/categories');
+const constant = require('./functions/constant');
 var sessionStore;
 var mysqlconnection;
 let data = (dataPassHost = dataPortDb = '');
@@ -169,11 +171,27 @@ registerI18n(server, (t, error) => {
       }
     });
 
+    const checkSubdomainAndInsertNew = async connection => {
+      let allCategories = await categoriesModel.getAllCategory(connection);
+      const subDomains = constant.subDomains;
+      for (let i = 0; i < subDomains.length; i++) {
+        let category = allCategories.find(
+          item => item?.slug === subDomains[i]?.slug,
+        );
+        if (!category) {
+          await categoriesModel.createCategory(subDomains[i], connection);
+        }
+      }
+    };
+
     server.use(connection(mysql, options, 'single'));
 
     server.use((req, res, next) => {
       req.getConnection(function (err, connection) {
         mysqlconnection = connection;
+        if (connection) {
+          checkSubdomainAndInsertNew(connection);
+        }
         // initRtmp();
         if (err) {
           res.send(err);

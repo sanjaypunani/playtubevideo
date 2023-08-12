@@ -13,7 +13,7 @@ import MiniPlayer from '../containers/Video/MiniPlayer';
 import AudioPlayer from '../containers/Audio/Player';
 import Head from 'next/head';
 import axios from 'axios';
-import { languages } from '../server/functions/constant';
+import { languages, subDomains } from '../server/functions/constant';
 
 const socket = socketOpen(config.app_server);
 registerI18n(Router);
@@ -25,6 +25,7 @@ class MyApp extends App {
     this.state = {
       languageLoading: false,
       ip_language: '',
+      subDomainCategory: null,
     };
   }
   static async getInitialProps({ Component, ctx }) {
@@ -135,7 +136,22 @@ class MyApp extends App {
       });
     });
   };
+
+  handleSubdomain = () => {
+    const host = window?.location?.hostname;
+    // const host = 'sbi.Inqtube.com';
+    const sudDomainSlug = host.toLocaleLowerCase().split('.')?.[0];
+    if (sudDomainSlug) {
+      axios.get(`/api/category-by-slug/${sudDomainSlug}`).then(response => {
+        const data = response?.data;
+        if (data?.result) {
+          this.setState({ subDomainCategory: data?.result });
+        }
+      });
+    }
+  };
   componentDidMount() {
+    this.handleSubdomain();
     this.getmyIp();
     Router.events.on('routeChangeStart', this.onRouteChangeStart);
     Router.events.on('routeChangeComplete', this.onRouteChangeComplete);
@@ -181,18 +197,21 @@ class MyApp extends App {
               isMobile={isMobile ? 992 : 993}
               socket={socket}
               ip_language={this.state.ip_language}
+              subDomainCategory={this.state.subDomainCategory}
             />
             <MiniPlayer
               {...pageProps}
               isMobile={isMobile ? 992 : 993}
               socket={socket}
               ip_language={this.state.ip_language}
+              subDomainCategory={this.state.subDomainCategory}
             />
             <AudioPlayer
               {...pageProps}
               isMobile={isMobile ? 992 : 993}
               socket={socket}
               ip_language={this.state.ip_language}
+              subDomainCategory={this.state.subDomainCategory}
             />
           </>
           {/* ) : ( */}

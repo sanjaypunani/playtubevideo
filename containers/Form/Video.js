@@ -826,9 +826,14 @@ class Video extends Component {
         key: 'category_id',
         label: 'Category',
         type: 'select',
-        value: this.state.editItem ? this.state.editItem.category_id : null,
+        value: this.props.subDomainCategory
+          ? this?.props?.subDomainCategory?.category_id
+          : this.state.editItem
+          ? this.state.editItem.category_id
+          : null,
         onChangeFunction: this.onCategoryChange,
         options: categories,
+        disabled: this?.props?.subDomainCategory ? true : false,
       });
 
       //get sub category

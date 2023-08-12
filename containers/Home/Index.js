@@ -74,7 +74,6 @@ class Home extends Component {
     }
   }
   componentDidMount() {
-    console.log('this.props is', this.props);
     if (this.state.categoriesData) {
       this.setState({ categories: this.state.categoriesData });
     }

@@ -3,6 +3,8 @@ const dateTime = require('node-datetime');
 const socketio = require('../socket');
 const commonFunction = require('../functions/commonFunctions');
 const axios = require('axios');
+const categoriesModel = require('./categories');
+
 module.exports = {
   getDefaultTips: function (req, data) {
     return new Promise(function (resolve, reject) {
@@ -454,6 +456,19 @@ module.exports = {
   getVideos: async function (req, data) {
     return new Promise(function (resolve) {
       req.getConnection(async function (err, connection) {
+        const host = req?.headers?.host;
+        // const host = 'sbi.Inqtube.com';
+        let subDomain = host.toLocaleLowerCase().split('.')?.[0];
+
+        let fourceCategory = null;
+
+        if (subDomain) {
+          fourceCategory = await categoriesModel.findBySlug(
+            { slug: subDomain },
+            req,
+          );
+        }
+
         let condition = [];
         let owner_id = 0;
         if (req.user && req.user.user_id) {
@@ -719,6 +734,11 @@ module.exports = {
         if (data?.parent_video) {
           condition.push(data.parent_video);
           sql += ' AND videos.parent_video =?';
+        }
+
+        if (fourceCategory) {
+          condition.push(fourceCategory.category_id);
+          sql += ' AND videos.category_id =?';
         }
 
         if (!data?.subLanguageAlso) {
