@@ -1731,10 +1731,12 @@ exports.create = async (req, res) => {
   //change getting the category id and name and video out from req.body and query
   let catId = req.body.category_id * 1;
   let vidId = req.body.videoId;
-  let catObj = req.query.categoriesVideo.filter(
-    item => item.category_id === catId,
-  );
-  let catName = catObj[0].title;
+  // let catObj = req.query.categoriesVideo.filter(
+  //   item => item.category_id === catId,
+  // );
+  let catObj = await categoryModel?.findById(catId, req, res);
+
+  let catName = catObj.title;
 
   await commonFunction.getGeneralInfo(req, res, '', true);
   if (req.imageError) {
