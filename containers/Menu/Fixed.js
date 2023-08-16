@@ -17,6 +17,7 @@ import axios from '../../axios-orders';
 import SiteModeChange from '../../containers/Sitemode/Index';
 import LanguageJOSN from '../../temporary/cache/languages';
 import constant from '../../server/functions/constant';
+import { getLogoBySlug } from '../../utils/helpers';
 
 class FixedMenu extends Component {
   constructor(props) {
@@ -472,16 +473,10 @@ class FixedMenu extends Component {
       return null;
     }
 
-    let logo = '';
-    if (this.props.pageInfoData.themeMode == 'dark') {
-      logo =
-        this.props.pageInfoData['imageSuffix'] +
-        this.props.pageInfoData.appSettings['darktheme_logo'];
-    } else {
-      logo =
-        this.props.pageInfoData['imageSuffix'] +
-        this.props.pageInfoData.appSettings['lightheme_logo'];
-    }
+    let logo = getLogoBySlug(
+      this.props.subDomainCategory?.slug,
+      this.props.pageInfoData,
+    );
 
     return (
       <header id="header" className="fixed-top ">

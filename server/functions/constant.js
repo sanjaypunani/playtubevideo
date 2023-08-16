@@ -224,38 +224,40 @@ const languages = [
 
 const subDomains = [
   {
-    slug: 'rbi',
-    title: 'RBI',
-  },
-
-  {
     slug: 'govt',
     title: 'GOVT',
+    light_logo: '/resources/govt.inqtube.logo.png',
   },
 
   {
     slug: 'govup',
     title: 'GOVUP',
+    light_logo: '/resources/govup.inqtube.logo.png',
   },
 
   {
     slug: 'Congress',
     title: 'CONGRESS',
+    light_logo: '/resources/congress.for.light.logo.inqtube.png',
+    dark_logo: '/resources/congress.for.Dark.logo.inqtube.png',
   },
 
   {
     slug: 'subharti',
     title: 'SUBHARTI',
+    light_logo: '/resources/subharti.logoinqtube.png',
   },
 
   {
     slug: 'pnb',
     title: 'PNB',
+    light_logo: '/resources/pnb.logoinqtube.png',
   },
 
   {
     slug: 'aubank',
     title: 'AUBANK',
+    light_logo: '/resources/aubank.logo.inqtube.png',
   },
 ];
 

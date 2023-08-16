@@ -9,6 +9,7 @@ import Image from '../Image/Index';
 
 import axios from '../../axios-orders';
 import Translate from '../../components/Translate/Index';
+import { getLogoBySlug } from '../../utils/helpers';
 class SideFixedMenu extends React.Component {
   constructor(props) {
     super(props);
@@ -194,16 +195,10 @@ class SideFixedMenu extends React.Component {
     if (hideSmallMenu && menuOpen) {
       return null;
     }
-    let logo = '';
-    if (this.props.pageInfoData.themeMode == 'dark') {
-      logo =
-        this.props.pageInfoData['imageSuffix'] +
-        this.props.pageInfoData.appSettings['darktheme_logo'];
-    } else {
-      logo =
-        this.props.pageInfoData['imageSuffix'] +
-        this.props.pageInfoData.appSettings['lightheme_logo'];
-    }
+    let logo = getLogoBySlug(
+      this.props.subDomainCategory?.slug,
+      this.props.pageInfoData,
+    );
     return (
       <div className={`sidebar-menu${menuOpen ? ' mini-menu' : ''}`}>
         {hideSmallMenu ? (

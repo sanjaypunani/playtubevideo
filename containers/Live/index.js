@@ -135,6 +135,19 @@ export const LiveMainPage = ({ socket }) => {
             </span>
           </div>
 
+          {item?.status === 'schedule' && (
+            <button
+              onClick={e => {
+                const watchUrl = `${window.location.origin}/live?watch=${item?.stream_id}`;
+                e.stopPropagation();
+                navigator.clipboard.writeText(watchUrl);
+              }}
+              style={{ height: 38, marginTop: 12 }}
+            >
+              Copy
+            </button>
+          )}
+
           {isMy && (
             <button
               onClick={e => {

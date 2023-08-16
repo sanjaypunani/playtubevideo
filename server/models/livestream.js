@@ -1,5 +1,6 @@
 const dateTime = require('node-datetime');
 const moment = require('moment');
+const categoriesModel = require('./categories');
 
 module.exports = {
   createLiveStream: function (connection, data) {
@@ -79,7 +80,20 @@ module.exports = {
 
   getLiveStream: function (req) {
     return new Promise(function (resolve, reject) {
-      req.getConnection(function (err, connection) {
+      req.getConnection(async function (err, connection) {
+        const host = req?.headers?.host;
+        // const host = 'govup.inqtube.com';
+        let subDomain = host.toLocaleLowerCase().split('.')?.[0];
+
+        let fourceCategory = null;
+
+        if (subDomain) {
+          fourceCategory = await categoriesModel.findBySlug(
+            { slug: subDomain },
+            req,
+          );
+        }
+
         const status = req?.query?.status;
         const user = req?.query?.user;
         let query = 'SELECT * FROM live_stream';
