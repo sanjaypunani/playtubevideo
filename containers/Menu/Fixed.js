@@ -464,19 +464,19 @@ class FixedMenu extends Component {
   render() {
     let activeLanguage = '';
 
+    let logo = '';
+
     if (typeof window !== 'undefined') {
       activeLanguage =
         constant.languageLable[localStorage.getItem('active_language')]?.name ||
         localStorage.getItem('active_language');
+      const host = window?.location?.hostname;
+      const sudDomainSlug = host.toLocaleLowerCase().split('.')?.[0];
+      logo = getLogoBySlug(sudDomainSlug, this.props.pageInfoData);
     }
     if (!this.props.pageInfoData) {
       return null;
     }
-
-    let logo = getLogoBySlug(
-      this.props.subDomainCategory?.slug,
-      this.props.pageInfoData,
-    );
 
     return (
       <header id="header" className="fixed-top ">
@@ -488,13 +488,15 @@ class FixedMenu extends Component {
                   <div className="menu-icon" onClick={this.showHideMenu}>
                     <span className="material-icons">menu</span>
                   </div>
-                  <div className="logo">
-                    <Link href="/">
-                      <a>
-                        <img src={logo} className="img-fluid" />
-                      </a>
-                    </Link>
-                  </div>
+                  {logo && (
+                    <div className="logo">
+                      <Link href="/">
+                        <a>
+                          <img src={logo} className="img-fluid" />
+                        </a>
+                      </Link>
+                    </div>
+                  )}
                 </div>
                 <div className="head-search">
                   <div className="search-box">

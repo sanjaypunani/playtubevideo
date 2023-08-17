@@ -195,10 +195,13 @@ class SideFixedMenu extends React.Component {
     if (hideSmallMenu && menuOpen) {
       return null;
     }
-    let logo = getLogoBySlug(
-      this.props.subDomainCategory?.slug,
-      this.props.pageInfoData,
-    );
+    let logo = '';
+    if (typeof window !== 'undefined') {
+      const host = window?.location?.hostname;
+      const sudDomainSlug = host.toLocaleLowerCase().split('.')?.[0];
+      logo = getLogoBySlug(sudDomainSlug, this.props.pageInfoData);
+    }
+
     return (
       <div className={`sidebar-menu${menuOpen ? ' mini-menu' : ''}`}>
         {hideSmallMenu ? (
@@ -207,13 +210,15 @@ class SideFixedMenu extends React.Component {
               <div className="menu-icon" onClick={this.showHideMenu}>
                 <span className="material-icons">menu</span>
               </div>
-              <div className="logo">
-                <Link href="/">
-                  <a onClick={this.closeMenu}>
-                    <img src={logo} className="img-fluid" />
-                  </a>
-                </Link>
-              </div>
+              {logo && (
+                <div className="logo">
+                  <Link href="/">
+                    <a onClick={this.closeMenu}>
+                      <img src={logo} className="img-fluid" />
+                    </a>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         ) : null}

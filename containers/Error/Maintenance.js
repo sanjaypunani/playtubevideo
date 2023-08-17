@@ -1,10 +1,12 @@
 import React from 'react';
 import { getLogoBySlug } from '../../utils/helpers';
 const Maintenance = props => {
-  let logo = getLogoBySlug(
-    this.props.subDomainCategory?.slug,
-    this.props.pageInfoData,
-  );
+  let logo = '';
+  if (typeof window !== 'undefined') {
+    const host = window?.location?.hostname;
+    const sudDomainSlug = host.toLocaleLowerCase().split('.')?.[0];
+    logo = getLogoBySlug(sudDomainSlug, this.props.pageInfoData);
+  }
 
   let background = props.pageData.pageInfo.banner;
 
@@ -22,9 +24,11 @@ const Maintenance = props => {
       <div className="container">
         <div className="row">
           <div className="col-md-12 maintenancepageTxt">
-            <div className="logo">
-              <img src={logo} />
-            </div>
+            {logo && (
+              <div className="logo">
+                <img src={logo} />
+              </div>
+            )}
             <h2>{props.t('MAINTENANCE PAGE')}</h2>
             <div className="msg">
               <p>

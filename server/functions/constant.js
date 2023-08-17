@@ -227,16 +227,18 @@ const subDomains = [
     slug: 'govt',
     title: 'GOVT',
     light_logo: '/resources/govt.inqtube.logo.png',
+    dark_logo: '/resources/govt.inqtube.logo.png',
   },
 
   {
     slug: 'govup',
     title: 'GOVUP',
     light_logo: '/resources/govup.inqtube.logo.png',
+    dark_logo: '/resources/govup.inqtube.logo.png',
   },
 
   {
-    slug: 'Congress',
+    slug: 'congress',
     title: 'CONGRESS',
     light_logo: '/resources/congress.for.light.logo.inqtube.png',
     dark_logo: '/resources/congress.for.Dark.logo.inqtube.png',
@@ -246,18 +248,21 @@ const subDomains = [
     slug: 'subharti',
     title: 'SUBHARTI',
     light_logo: '/resources/subharti.logoinqtube.png',
+    dark_logo: '/resources/subharti.logoinqtube.png',
   },
 
   {
     slug: 'pnb',
     title: 'PNB',
     light_logo: '/resources/pnb.logoinqtube.png',
+    dark_logo: '/resources/pnb.logoinqtube.png',
   },
 
   {
     slug: 'aubank',
     title: 'AUBANK',
     light_logo: '/resources/aubank.logo.inqtube.png',
+    dark_logo: '/resources/aubank.logo.inqtube.png',
   },
 ];
 

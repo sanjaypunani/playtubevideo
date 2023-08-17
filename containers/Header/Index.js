@@ -9,22 +9,27 @@ class Index extends React.Component {
     super(props);
   }
   render() {
-    let logo = getLogoBySlug(
-      this.props.subDomainCategory?.slug,
-      this.props.pageInfoData,
-    );
+    let logo = '';
+
+    if (typeof window !== 'undefined') {
+      const host = window?.location?.hostname;
+      const sudDomainSlug = host.toLocaleLowerCase().split('.')?.[0];
+      logo = getLogoBySlug(sudDomainSlug, this.props.pageInfoData);
+    }
 
     return this.props.liveStreaming ? (
       <div className="ls_HeaderWrap">
         <div className="container-fluid">
           <div className="ls_headerContent">
-            <div className="logo">
-              <Link href="/">
-                <a>
-                  <img src={logo} />
-                </a>
-              </Link>
-            </div>
+            {logo && (
+              <div className="logo">
+                <Link href="/">
+                  <a>
+                    <img src={logo} />
+                  </a>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>

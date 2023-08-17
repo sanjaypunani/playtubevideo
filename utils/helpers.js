@@ -7,7 +7,7 @@ export const getLogoBySlug = (slug, pageInfoData) => {
     if (pageInfoData.themeMode == 'dark') {
       logo =
         pageInfoData['imageSuffix'] +
-        this.props.pageInfoData.appSettings['darktheme_logo'];
+        pageInfoData.appSettings['darktheme_logo'];
     } else {
       logo =
         pageInfoData['imageSuffix'] +
@@ -15,9 +15,7 @@ export const getLogoBySlug = (slug, pageInfoData) => {
     }
   } else {
     if (pageInfoData.themeMode == 'dark') {
-      logo =
-        pageInfoData['imageSuffix'] + subDomain?.dark_logo ||
-        subDomain?.light_logo;
+      logo = pageInfoData['imageSuffix'] + subDomain?.dark_logo;
     } else {
       logo = pageInfoData['imageSuffix'] + subDomain?.light_logo;
     }
