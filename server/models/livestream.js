@@ -82,7 +82,7 @@ module.exports = {
     return new Promise(function (resolve, reject) {
       req.getConnection(async function (err, connection) {
         const host = req?.headers?.host;
-        // const host = 'govup.inqtube.com';
+        // const host = 'sbi.inqtube.com';
         let subDomain = host.toLocaleLowerCase().split('.')?.[0];
 
         let fourceCategory = null;
@@ -106,6 +106,10 @@ module.exports = {
           if (user === 'me') {
             query = query + `AND owner = ${req?.user?.user_id || -1}`;
           }
+        }
+
+        if (fourceCategory) {
+          query = query + `AND category = ${fourceCategory?.category_id}`;
         }
 
         console.log('get sql quary', query);
@@ -137,7 +141,7 @@ module.exports = {
   },
 
   getLiveStreamById: function (res, id) {
-    return new Promise(function (resolve, reject) {
+    return new Promise(async function (resolve, reject) {
       res.getConnection(function (err, connection) {
         connection.query(
           'SELECT * FROM live_stream WHERE stream_id = ?',
@@ -173,8 +177,9 @@ module.exports = {
         );
         insertData.push(req.user.user_id || 0);
         insertData.push(dateTime.create().format('Y-m-d H:M:S'));
+        insertData.push(data?.category);
         let sql =
-          'INSERT INTO `live_stream`( `stream_id`, `user_id`, `stream_url`, `poster`, `name`, `description`, `recording`, `status`, `schedule_date_time`, `owner`, `creation_date`) VALUES (?,?,?,?,?,?,?,?,?,?,?)';
+          'INSERT INTO `live_stream`( `stream_id`, `user_id`, `stream_url`, `poster`, `name`, `description`, `recording`, `status`, `schedule_date_time`, `owner`, `creation_date`, `category`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)';
         connection.query(sql, insertData, function (err, results) {
           if (!err) {
             resolve(results);
