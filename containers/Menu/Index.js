@@ -37,6 +37,7 @@ class Menu extends Component {
       loading: true,
       notifications: [],
       menuStyle: '',
+      logo: '',
     };
     this.loadMoreContent = this.loadMoreContent.bind(this);
     this.updateOpenedMenu = this.updateOpenedMenu.bind(this);
@@ -304,6 +305,11 @@ class Menu extends Component {
       });
   }
   componentDidMount() {
+    const host = window?.location?.hostname;
+    const sudDomainSlug = host.toLocaleLowerCase().split('.')?.[0];
+    let logo = getLogoBySlug(sudDomainSlug, this.props.pageInfoData);
+    this.setState({ logo: logo });
+
     this.props.socket.on('notifications', data => {
       if (
         this.props.pageInfoData &&
@@ -704,13 +710,6 @@ class Menu extends Component {
             </li>
           );
         }));
-    let logo = '';
-
-    if (typeof window !== 'undefined') {
-      const host = window?.location?.hostname;
-      const sudDomainSlug = host.toLocaleLowerCase().split('.')?.[0];
-      logo = getLogoBySlug(sudDomainSlug, this.props.pageInfoData);
-    }
 
     return !this.props.mobileMenu ? (
       <div className="header-wrap">
@@ -718,11 +717,11 @@ class Menu extends Component {
           <div className="row">
             <div className="col-lg-12">
               <div className="hedearTop">
-                {logo && (
+                {this.state.logo && (
                   <div className="logo">
                     <Link href="/">
                       <a>
-                        <img src={logo} />
+                        <img src={this.state.logo} />
                       </a>
                     </Link>
                   </div>
@@ -939,15 +938,17 @@ class Menu extends Component {
                   >
                     <span className="material-icons parent menu-bar">menu</span>
                   </button>
-                  {logo && (
+
+                  {this.state.logo && (
                     <div className="MobLogo">
                       <Link href="/">
                         <a>
-                          <img src={logo} />
+                          <img src={this.state.logo} />
                         </a>
                       </Link>
                     </div>
                   )}
+
                   <div
                     className={`collapse navbar-collapse bg-inverse MobMenuScroll${this.state.menuStyle}`}
                   >
