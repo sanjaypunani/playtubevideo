@@ -82,7 +82,6 @@ module.exports = {
     return new Promise(function (resolve, reject) {
       req.getConnection(async function (err, connection) {
         const host = req?.headers?.host;
-        // const host = 'sbi.inqtube.com';
         let subDomain = host.toLocaleLowerCase().split('.')?.[0];
 
         let fourceCategory = null;
@@ -100,22 +99,23 @@ module.exports = {
         if (status) {
           query = query + ` WHERE status = '${status}'`;
           if (status === 'schedule') {
-            query = query + `AND owner = ${req?.user?.user_id || -1}`;
+            query = query + ` AND owner = ${req?.user?.user_id || -1}`;
           }
 
           if (user === 'me') {
-            query = query + `AND owner = ${req?.user?.user_id || -1}`;
+            query = query + ` AND owner = ${req?.user?.user_id || -1}`;
           }
         }
 
         if (fourceCategory) {
-          query = query + `AND category = ${fourceCategory?.category_id}`;
+          query = query + ` AND category = ${fourceCategory?.category_id}`;
         }
 
         console.log('get sql quary', query);
         connection.query(query, function (err, results) {
           if (err) {
-            resolve(false);
+            console.log('err: ', err);
+            reject(err);
           }
           resolve(results);
         });
