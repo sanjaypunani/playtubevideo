@@ -6,14 +6,19 @@ import { schedule } from 'node-cron';
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-export const CreateStreamPopup = ({ handleClose, open, data }) => {
+export const CreateStreamPopup = ({
+  handleClose,
+  open,
+  data,
+  subDomainCategory,
+}) => {
   const { pageInfoData } = useSelector(state => state.general);
   const categories = pageInfoData?.categories;
   const [randomNumber, setRandomNumber] = useState(
     Math.floor(Math.random() * 100000000000),
   );
   const [streamData, setStreamData] = useState({
-    category: categories[0],
+    category: subDomainCategory || categories[0],
     stream_date: moment(new Date()).format('YYYY-MM-DD'),
     stream_time: moment(new Date()).format('HH:mm'),
   });
@@ -124,6 +129,7 @@ export const CreateStreamPopup = ({ handleClose, open, data }) => {
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false"
+                disabled={Boolean(subDomainCategory)}
               >
                 {streamData?.category?.title}
               </button>

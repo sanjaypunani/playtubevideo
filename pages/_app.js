@@ -139,6 +139,7 @@ class MyApp extends App {
 
   handleSubdomain = () => {
     const host = window?.location?.hostname;
+    // const host = 'sbi.inqtube.com';
     const sudDomainSlug = host.toLocaleLowerCase().split('.')?.[0];
     if (sudDomainSlug) {
       axios.get(`/api/category-by-slug/${sudDomainSlug}`).then(response => {

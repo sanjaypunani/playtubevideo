@@ -12,7 +12,7 @@ import { ScheduledStreamPopup } from './ScheduledStreamPopup';
 import Router from 'next/router';
 import { useSelector } from 'react-redux';
 
-export const LiveMainPage = ({ socket }) => {
+export const LiveMainPage = ({ socket, subDomainCategory }) => {
   const router = useRouter();
   const { pageInfoData } = useSelector(state => state.general);
 
@@ -351,6 +351,7 @@ export const LiveMainPage = ({ socket }) => {
         {showCreateStream && (
           <CreateStreamPopup
             open={showCreateStream}
+            subDomainCategory={subDomainCategory}
             handleClose={data => {
               getPageData();
               if (data?.isSuccess) {
