@@ -654,7 +654,7 @@ registerI18n(server, (t, error) => {
           '-hls_time',
           '10', // Set segment duration (in seconds)
           '-hls_list_size',
-          '6', // Set maximum number of playlist entries
+          '500000', // Set maximum number of playlist entries
           '-hls_segment_filename',
           `${hslFilePath}/${fileName}%03d.ts`, // Output segment filename pattern
           `${hslFilePath}/${fileName}.m3u8`, // Output HLS playlist filename
