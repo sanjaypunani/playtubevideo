@@ -327,6 +327,8 @@
                                 data-target="#modal-danger">Delete</a>
                             <a class="btn btn-primary btn-xs" target="_blank"
                                 href="/create-video/<%= results[i].custom_url %>">Edit</a>
+                            <a class="btn btn-primary btn-xs" href="/swipe/<%= results[i].custom_url %>"
+                                    >Swipe</a>
                 </td>
               </tr>
               <% } %>
@@ -353,6 +355,27 @@
             </div>
             <!-- /.modal-dialog -->
         </div>
+
+        <div class="modal model-dialog-hide" id="swipe-model">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Delete</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure want to delete this? It will not be recoverable after being deleted.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" onclick="deleteFunction()" class="btn btn-outline">Delete</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+
         <%if (paggingData) { %>
         <div class="box-footer clearfix">
             <%- paggingData %>

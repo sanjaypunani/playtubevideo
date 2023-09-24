@@ -1154,6 +1154,42 @@ exports.view = async (req, res) => {
     req.app.render(req, res, '/watch', req.query);
   }
 };
+
+exports.swipe = async (req, res) => {
+  await commonFunction.getGeneralInfo(req, res, 'video_view');
+  req.query.videoId = req.params.id;
+  req.query.lng = req.params.lng;
+
+  let video = {};
+  await videoModel
+    .getVideos(req, {
+      custom_url: req.query.videoId ? req.query.videoId : 'notfound',
+      videoview: true,
+      subLanguageAlso: !req.query.lng,
+    })
+    .then(result => {
+      if (result && result.length > 0) {
+        video = result[0];
+      } else {
+        showVideo = false;
+      }
+    })
+    .catch(error => {
+      showVideo = false;
+    });
+
+  req.query.video = video;
+
+  if (req.query.data) {
+    res.send({ data: req.query });
+    return;
+  }
+  if (req.embed) {
+    req.app.render(req, res, '/embed', req.query);
+  } else {
+    req.app.render(req, res, '/swipe', req.query);
+  }
+};
 exports.adClicked = async (req, res, next) => {
   let id = req.params.id;
   let type = req.params.type;

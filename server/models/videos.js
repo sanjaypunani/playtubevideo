@@ -228,6 +228,22 @@ module.exports = {
       });
     });
   },
+
+  swipeVideo: function (req, data) {
+    return new Promise(function (resolve, reject) {
+      req.getConnection(function (err, connection) {
+        let custom_url = data.from_video;
+        let swipe_slug = data.swipe_slug;
+        connection.query(
+          `UPDATE videos SET swipe_to = "${swipe_slug}" WHERE custom_url = ?`,
+          [custom_url],
+          function (err, results) {
+            resolve(results);
+          },
+        );
+      });
+    });
+  },
   deleteChatMessage: function (connection, data) {
     return new Promise(function (resolve, reject) {
       connection.query(

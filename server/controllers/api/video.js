@@ -1727,6 +1727,35 @@ exports.password = async (req, res) => {
     .end();
 };
 
+exports.swipeTo = async (req, res) => {
+  console.log('come in api call');
+  let from_video = req.query.from;
+  console.log('from_video: ', from_video);
+  let swipe_slug = req.query.swipe_slug;
+  console.log('swipe_slug: ', swipe_slug);
+
+  videoModel
+    .swipeVideo(req, {
+      from_video,
+      swipe_slug,
+    })
+    .then(result => {
+      console.log('result: ', result);
+      return res.send({
+        status: 200,
+        result,
+        message: 'Video swipes successfully',
+      });
+    })
+    .catch(error => {
+      console.log('error: ', error);
+      return res.send({
+        error: error,
+        status: errorCodes.invalid,
+      });
+    });
+};
+
 exports.create = async (req, res) => {
   //change getting the category id and name and video out from req.body and query
   let catId = req.body.category_id * 1;

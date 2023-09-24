@@ -192,6 +192,9 @@ class Index extends Component {
     }
   }
   componentDidMount() {
+    if (this.props.pageInfoData?.mainVideo?.swipe_to) {
+      Router.push(`/watch/${this.props.pageInfoData?.mainVideo?.swipe_to}`);
+    }
     if (
       this.props.pageInfoData.appSettings['fixed_header'] == 1 &&
       this.props.hideSmallMenu &&
