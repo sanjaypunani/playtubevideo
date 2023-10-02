@@ -11,7 +11,9 @@
   </div>
   <!-- ./wrapper -->
   <script type="application/javascript">
-  $(document).ajaxStart(function() { Pace.restart(); }); 
+  $(document).ajaxStart(function() { 
+    // Pace.restart(); 
+  }); 
   $(document).ajaxComplete(function(){
     Pace.stop();
   });
