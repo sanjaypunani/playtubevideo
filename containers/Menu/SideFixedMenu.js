@@ -433,8 +433,7 @@ class SideFixedMenu extends React.Component {
           ) : null}
 
           <div className={`sidebar-menu-two${menuOpen ? ' hide' : ''}`}>
-            {this.props.pageInfoData.categoriesVideo &&
-            !this?.props?.subDomainCategory ? (
+            {this.props.pageInfoData.categoriesVideo && (
               <ul className="main-menu border-sidebar">
                 <li className="sidebar-menu-title">
                   {Translate(this.props, 'Categories')}
@@ -461,7 +460,7 @@ class SideFixedMenu extends React.Component {
                   );
                 })}
               </ul>
-            ) : null}
+            )}
 
             <ul className="main-menu border-sidebar">
               <li className="sidebar-menu-title">

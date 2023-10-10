@@ -161,6 +161,13 @@ class Video extends Component {
       this.empty = true;
       this.firstLoaded = false;
     }
+
+    if (this.props.subDomainCategory !== prevProps.subDomainCategory) {
+      this.setState({
+        category_id: this?.props?.subDomainCategory?.category_id,
+        localUpdate: true,
+      });
+    }
   }
   onSubmit = model => {
     if (this.state.submitting) {
@@ -1157,6 +1164,7 @@ class Video extends Component {
       }
       this.firstLoaded = true;
     }
+
     if (this.state.category_id) {
       defaultValues['category_id'] = this.state.category_id;
     }

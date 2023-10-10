@@ -473,7 +473,6 @@ module.exports = {
     return new Promise(function (resolve) {
       req.getConnection(async function (err, connection) {
         const host = req?.headers?.host;
-        // const host = 'govup.inqtube.com';
         let subDomain = host.toLocaleLowerCase().split('.')?.[0];
 
         let fourceCategory = null;
