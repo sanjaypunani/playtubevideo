@@ -342,6 +342,7 @@ registerI18n(server, (t, error) => {
     server.use(express.static(path.join(__dirname, 'public')));
     server.use('/images', express.static(path.join(__dirname, 'public/')));
     server.use('/recording', express.static('recording'));
+    server.use('/policy', express.static('policy'));
     server.use('/bower_components', express.static('bower_components'));
     server.use('/dist', express.static('dist'));
 
