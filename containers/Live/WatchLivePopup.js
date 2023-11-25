@@ -57,26 +57,33 @@ export const WatchLivePopup = ({ handleClose, open, data, socket }) => {
                 className="camera-view"
               >
                 {recordingUrl && (
-                  <ReactPlayer
-                    ref={liveRef}
-                    height={'100%'}
-                    playsinline={true}
-                    width={'100vw'}
-                    style={{ objectFit: 'cover' }}
-                    // url={liveStreamUrl}
-                    url={recordingUrl}
-                    playing={playing}
-                    // config={{
-                    //   file: {
-                    //     forceFLV: true,
-                    //   },
-                    // }}
-                    muted={mutedStream}
-                    controls={true}
-                    onReady={() => {
-                      setPlaying(true);
-                      setMutedStream(false);
+                  // <ReactPlayer
+                  //   ref={liveRef}
+                  //   height={'100%'}
+                  //   playsinline={true}
+                  //   width={'100vw'}
+                  //   style={{ objectFit: 'cover' }}
+                  //   url={recordingUrl}
+                  //   playing={playing}
+                  //   muted={mutedStream}
+                  //   controls={true}
+                  //   onReady={() => {
+                  //     setPlaying(true);
+                  //     setMutedStream(false);
+                  //   }}
+                  // />
+                  <iframe
+                    // style={{width: '100%', border: 'none', height: '100%'}}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      position: 'relative',
+                      border: 'none',
                     }}
+                    src={`https://storage1.inqtube.com/gnxPlayer/public/gplr2.html?path=${recordingUrl}&autoplay=true`}
+                    allowFullScreen=""
+                    playsInline
+                    allow="autoplay; fullscreen; picture-in-picture; xr-spatial-tracking; encrypted-media"
                   />
                 )}
               </div>
@@ -84,14 +91,27 @@ export const WatchLivePopup = ({ handleClose, open, data, socket }) => {
               <div style={{ height: 'calc(100vh - 80px)', marginBottom: 132 }}>
                 {streamData?.status !== 'schedule' ? (
                   recordingUrl && (
-                    <ReactPlayer
-                      playsinline={true}
-                      height={'100%'}
-                      width={'100vw'}
-                      style={{ objectFit: 'cover' }}
-                      url={recordingUrl}
-                      playing
-                      controls={true}
+                    // <ReactPlayer
+                    //   playsinline={true}
+                    //   height={'100%'}
+                    //   width={'100vw'}
+                    //   style={{ objectFit: 'cover' }}
+                    //   url={recordingUrl}
+                    //   playing
+                    //   controls={true}
+                    // />
+                    <iframe
+                      // style={{width: '100%', border: 'none', height: '100%'}}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        position: 'relative',
+                        border: 'none',
+                      }}
+                      src={`https://storage1.inqtube.com/gnxPlayer/public/gplr2.html?path=${recordingUrl}&autoplay=true`}
+                      allowFullScreen=""
+                      playsInline
+                      allow="autoplay; fullscreen; picture-in-picture; xr-spatial-tracking; encrypted-media"
                     />
                   )
                 ) : (
@@ -107,19 +127,17 @@ export const WatchLivePopup = ({ handleClose, open, data, socket }) => {
             )}
 
             <div className="footer-view">
-              <div />
-              <button
-                type="button"
-                data-dismiss="modal"
+              <i
+                style={{ color: 'gray', fontSize: 36, cursor: 'pointer' }}
+                class="fa fa-window-close"
+                aria-hidden="true"
                 onClick={() => {
                   setLiveStreamUrl(null);
                   setRecordingUrl(null);
                   setStreamData(null);
                   handleClose();
                 }}
-              >
-                Back
-              </button>
+              ></i>
               {streamData?.status === 'live' ? (
                 <div
                   onClick={() => setShowChat(true)}

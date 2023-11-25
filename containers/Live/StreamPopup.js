@@ -218,19 +218,13 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
             {/* Footer */}
             {streamStarted && (
               <div className="footer-view">
-                <div />
-                {/* <div
-                  onClick={() => handleCameraSwitch()}
-                  className="chat-icon-button"
-                >
-                  <i
-                    style={{ fontSize: 24, color: 'white' }}
-                    class="fa fa-camera"
-                  ></i>
-                </div> */}
-                <button type="button" data-dismiss="modal" onClick={stopStream}>
-                  End
-                </button>
+                <i
+                  style={{ color: 'gray', fontSize: 36, cursor: 'pointer' }}
+                  class="fa fa-window-close"
+                  aria-hidden="true"
+                  onClick={stopStream}
+                ></i>
+
                 <div
                   onClick={() => setShowChat(true)}
                   className="chat-icon-button"
