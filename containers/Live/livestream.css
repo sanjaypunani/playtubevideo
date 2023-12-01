@@ -280,6 +280,30 @@ background-color: black;
   color: white;
 }
 
+
+.live-warper{
+  height: 100%;
+  width: 100%;
+  
+  display: flex;
+  justify-self: center;
+  align-items: center;
+}
+
+.live-video-view{
+  height: 100%;
+  width: 100%;
+  background-color: black;
+  object-fit: contain;
+  max-height: calc(100vh - 200px) !important;
+}
+
+video{
+  height: 100%;
+  width: 100%;
+  max-height: calc(100vh - 200px) !important;
+}
+
 @media only screen and (max-width: 480px) {
 
 

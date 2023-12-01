@@ -1,15 +1,14 @@
 import React from 'react';
-import Layout from '../hoc/Layout/Layout';
-import * as actions from '../store/actions/general';
-import axios from '../axios-site';
-import i18n from '../i18n';
+import Layout from '../../hoc/Layout/Layout';
+import * as actions from '../../store/actions/general';
+import axios from '../../axios-site';
+import i18n from '../../i18n';
 import { withTranslation } from 'react-i18next';
-
-import PageNotFound from '../containers/Error/PageNotFound';
-import PermissionError from '../containers/Error/PermissionError';
-import Login from '../containers/Login/Index';
-import Maintanance from '../containers/Error/Maintenance';
-import { LiveMainPage } from '../containers/Live';
+import PageNotFound from '../../containers/Error/PageNotFound';
+import PermissionError from '../../containers/Error/PermissionError';
+import Login from '../../containers/Login/Index';
+import Maintanance from '../../containers/Error/Maintenance';
+import { GoWatchLive } from '../../containers/Live/GoWatchLive';
 
 const Videos = props => (
   <Layout {...props}>
@@ -22,7 +21,7 @@ const Videos = props => (
     ) : props.maintanance ? (
       <Maintanance {...props} />
     ) : (
-      <LiveMainPage {...props} />
+      <GoWatchLive {...props} />
     )}
   </Layout>
 );
@@ -52,10 +51,9 @@ Extended.getInitialProps = async function (context) {
     if (context.query) {
       params = '&' + $.param(context.query);
     }
-    let liveStreaming = '&isLiveStreaming=1';
     let type = context.query.pageType ? context.query.pageType : '';
     const pageData = await axios.get(
-      '/live/' + type + '?data=1' + liveStreaming + params,
+      `/live/${context.query?.slug}/` + type + '?data=1' + params,
     );
     return {
       pageData: pageData.data.data,

@@ -94,9 +94,10 @@ export const LiveMainPage = ({ socket, subDomainCategory }) => {
         // id={`watchlivepopup_${item?.stream_id}`}
         onClick={() => {
           setWatchLiveData(item);
-
+          router.push(`/live/create?stream_id=${item?.stream_id}`);
           if (item?.status === 'live') {
-            setShowWatchLive(true);
+            router.push(`/live/create?stream_id=${item?.stream_id}`);
+            // setShowWatchLive(true);
           } else if (item?.status === 'schedule') {
             setSchedulesStreamData(item);
             setShowScheduledStream(true);
