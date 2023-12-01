@@ -34,7 +34,7 @@ export const GoWatchLive = ({ socket, pageData }) => {
         globalMessages.push(message);
         setMessages([...globalMessages]);
       });
-      socket.emit('joinLiveStream', streamData?.stream_id);
+      socket.emit('joinLiveStream', pageData?.stream?.stream_id);
     }
   }, [pageData?.stream]);
 
