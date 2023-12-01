@@ -111,7 +111,7 @@ export const LiveMainPage = ({ socket, subDomainCategory }) => {
             ? '#watchlivepopup'
             : item?.status === 'schedule'
             ? '#scheduledstreampopup'
-            : '#watchrecordingepopup'
+            : ''
         }
         className="live-card"
       >
