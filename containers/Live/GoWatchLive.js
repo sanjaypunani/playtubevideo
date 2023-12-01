@@ -17,7 +17,7 @@ export const GoWatchLive = ({ socket, pageData }) => {
         if (window.location.protocol === 'http') {
           liveHost = 'http://localhost:8000';
         } else {
-          liveHost = 'https://localhost:8443';
+          liveHost = 'https://inqtube.com:8443';
         }
         setPlayingUrl(`${liveHost}${pageData?.stream?.stream_url}.flv`);
       } else if (pageData?.stream?.status === 'end') {
