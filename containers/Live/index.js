@@ -18,18 +18,13 @@ export const LiveMainPage = ({ socket, subDomainCategory }) => {
 
   const params = router.query;
 
-  const [showLiveModel, setShowLiveModel] = useState(false);
-  const [showWatchLive, setShowWatchLive] = useState(false);
   const [showScheduledStream, setShowScheduledStream] = useState(false);
-  const [showWatchRecording, setShowWatchRecording] = useState(false);
   const [showCreateStream, setShowCreateStream] = useState(false);
-  const [createStreamData, setCreateStreamData] = useState();
   const [scheduledStreamData, setSchedulesStreamData] = useState();
   const [lives, setLives] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [myRecordings, setMyRecording] = useState([]);
   const [recordings, setRecordings] = useState([]);
-  const [watchLiveData, setWatchLiveData] = useState();
 
   const getLiveStreams = () => {
     const url = '/api/lives?status=live';
@@ -75,7 +70,6 @@ export const LiveMainPage = ({ socket, subDomainCategory }) => {
 
   useEffect(() => {
     if (params?.watch) {
-      setWatchLiveData({ stream_id: params?.watch });
       const liveButton = document.getElementById(`watch-live-hidden-button`);
       liveButton.click();
     }
@@ -91,28 +85,14 @@ export const LiveMainPage = ({ socket, subDomainCategory }) => {
   const StreamVideoCard = ({ item, isMy }) => {
     return (
       <div
-        // id={`watchlivepopup_${item?.stream_id}`}
         onClick={() => {
-          setWatchLiveData(item);
-          router.push(`/live/create?stream_id=${item?.stream_id}`);
-          if (item?.status === 'live') {
+          if (item?.status === 'schedule') {
             router.push(`/live/create?stream_id=${item?.stream_id}`);
-            // setShowWatchLive(true);
-          } else if (item?.status === 'schedule') {
-            setSchedulesStreamData(item);
-            setShowScheduledStream(true);
           } else {
-            setShowWatchRecording(true);
+            router.push(`/live/join?stream_id=${item?.stream_id}`);
           }
         }}
         data-toggle="modal"
-        data-target={
-          item?.status === 'live'
-            ? '#watchlivepopup'
-            : item?.status === 'schedule'
-            ? '#scheduledstreampopup'
-            : ''
-        }
         className="live-card"
       >
         <div className="stream-image-div">
@@ -139,7 +119,7 @@ export const LiveMainPage = ({ socket, subDomainCategory }) => {
           {item?.status === 'schedule' && (
             <button
               onClick={e => {
-                const watchUrl = `${window.location.origin}/live?watch=${item?.stream_id}`;
+                const watchUrl = `${window.location.origin}/live/join?stream_id=${item?.stream_id}`;
                 e.stopPropagation();
                 navigator.clipboard.writeText(watchUrl);
               }}
@@ -183,25 +163,6 @@ export const LiveMainPage = ({ socket, subDomainCategory }) => {
           Create Stream
         </button>
 
-        <button
-          style={{ display: 'none' }}
-          id="go-live-hidden-button"
-          onClick={() => setShowLiveModel(true)}
-          data-toggle="modal"
-          data-target="#golivepopup"
-        >
-          Go Live
-        </button>
-
-        <button
-          style={{ display: 'none' }}
-          id="watch-live-hidden-button"
-          onClick={() => setShowWatchLive(true)}
-          data-toggle="modal"
-          data-target="#watchlivepopup"
-        >
-          watchh auto stream
-        </button>
         <div style={{ height: 18 }} />
         <div className="titleWrap">
           <span className="title">
@@ -291,44 +252,6 @@ export const LiveMainPage = ({ socket, subDomainCategory }) => {
             })}
         </div>
 
-        {showLiveModel && (
-          <StreamPopup
-            socket={socket}
-            open={showLiveModel}
-            streamData={createStreamData}
-            handleClose={() => {
-              getPageData();
-              setShowLiveModel(false);
-            }}
-          />
-        )}
-
-        {/* {showWatchLive && ( */}
-        <WatchLivePopup
-          socket={socket}
-          open={showWatchLive}
-          data={watchLiveData}
-          handleClose={() => {
-            window.location.href = `${window.location.origin}/live`;
-            getPageData();
-            setShowWatchLive(false);
-          }}
-        />
-        {/* )} */}
-
-        {showWatchRecording && (
-          <WatchLiveRecording
-            socket={socket}
-            open={showWatchRecording}
-            data={watchLiveData}
-            handleClose={() => {
-              window.location.href = `${window.location.origin}/live`;
-              getPageData();
-              setShowWatchRecording(false);
-            }}
-          />
-        )}
-
         {showScheduledStream && (
           <ScheduledStreamPopup
             socket={socket}
@@ -337,7 +260,6 @@ export const LiveMainPage = ({ socket, subDomainCategory }) => {
             handleClose={data => {
               getPageData();
               if (data?.isSuccess) {
-                setCreateStreamData(data?.streamData);
                 setSchedulesStreamData(data?.streamData);
                 setSchedulesStreamData(false);
                 const liveButton = document.getElementById(
@@ -356,7 +278,6 @@ export const LiveMainPage = ({ socket, subDomainCategory }) => {
             handleClose={data => {
               getPageData();
               if (data?.isSuccess) {
-                setCreateStreamData(data?.streamData);
                 setShowCreateStream(false);
                 const liveButton = document.getElementById(
                   'go-live-hidden-button',

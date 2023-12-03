@@ -7,8 +7,12 @@ const globalModel = require('../models/globalModel');
 
 exports.create = async (req, res) => {
   await commonFunction.getGeneralInfo(req, res, 'video_view');
+  console.log('req.query: ', req.query.stream_id);
 
   const stream = await livestream.getLiveStreamById(req, req.query.stream_id);
+  if (!stream[0]) {
+    req.app.render(req, res, '/page-not-found', req.query);
+  }
   req.query.stream = stream[0];
   //   req.query.videoId = req.params.id;
   //   req.query.lng = req.params.lng;
@@ -25,6 +29,6 @@ exports.create = async (req, res) => {
     res.send({ data: req.query });
     return;
   }
-  req.app.render(req, res, '/live/create', req.query);
+  req.app.render(req, res, `/live/${req.params?.slug}`, req.query);
   return req.query;
 };

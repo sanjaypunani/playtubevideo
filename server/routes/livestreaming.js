@@ -33,5 +33,6 @@ router.get(
 );
 
 router.use('/:lng?/live/create?', liveController.create);
+router.use('/:lng?/live/join?', liveController.create);
 
 module.exports = router;

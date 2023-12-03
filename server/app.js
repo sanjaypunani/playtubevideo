@@ -76,11 +76,11 @@ const config = {
     port: 8000,
     allow_origin: '*',
   },
-  https: {
-    port: 8443,
-    key: '/etc/letsencrypt/live/govup.inqtube.com/privkey.pem',
-    cert: '/etc/letsencrypt/live/govup.inqtube.com/fullchain.pem',
-  },
+  // https: {
+  //   port: 8443,
+  //   key: '/etc/letsencrypt/live/govup.inqtube.com/privkey.pem',
+  //   cert: '/etc/letsencrypt/live/govup.inqtube.com/fullchain.pem',
+  // },
 };
 
 registerI18n(server, (t, error) => {
@@ -629,6 +629,12 @@ registerI18n(server, (t, error) => {
           // '1',
           rtmpServer,
         ]);
+        const reqData = {
+          stream_id: data?.stream_id,
+          status: 'live',
+        };
+        await livestream.updateLiveStreamStatus(mysqlconnection, reqData);
+        io.emit('update_live');
 
         socket.on('streamData', stream => {
           // console.log('stream: is in main', stream);
@@ -665,17 +671,17 @@ registerI18n(server, (t, error) => {
 
         ffmpegHslProcess.stderr.on('data', data => {});
 
-        let streamFileCheckInterval = setInterval(async () => {
-          if (fs.existsSync(`${hslFilePath}/${fileName}.m3u8`)) {
-            clearInterval(streamFileCheckInterval);
-            const reqData = {
-              stream_id: data?.stream_id,
-              status: 'live',
-            };
-            await livestream.updateLiveStreamStatus(mysqlconnection, reqData);
-            io.emit('update_live');
-          }
-        }, 1000);
+        // let streamFileCheckInterval = setInterval(async () => {
+        //   if (fs.existsSync(`${hslFilePath}/${fileName}.m3u8`)) {
+        //     clearInterval(streamFileCheckInterval);
+        //     const reqData = {
+        //       stream_id: data?.stream_id,
+        //       status: 'live',
+        //     };
+        //     await livestream.updateLiveStreamStatus(mysqlconnection, reqData);
+        //     io.emit('update_live');
+        //   }
+        // }, 1000);
 
         socket.on('streamEnd', () => {
           console.log('get call for stream end');

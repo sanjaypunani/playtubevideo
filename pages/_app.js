@@ -164,7 +164,6 @@ class MyApp extends App {
   }
 
   render() {
-    console.log('get log upload test');
     const { Component, pageProps } = this.props;
     let { initialLanguage, initialI18nStore, isMobile } = pageProps;
     i18n.store.data = initialI18nStore;

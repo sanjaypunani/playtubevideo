@@ -2,16 +2,13 @@
 
 import axios from 'axios';
 import moment from 'moment';
+import { useRouter } from 'next/router';
 import { schedule } from 'node-cron';
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-export const CreateStreamPopup = ({
-  handleClose,
-  open,
-  data,
-  subDomainCategory,
-}) => {
+export const CreateStreamPopup = ({ handleClose, open, subDomainCategory }) => {
+  const router = useRouter();
   const { pageInfoData } = useSelector(state => state.general);
   const categories = pageInfoData?.categories;
   const [randomNumber, setRandomNumber] = useState(
@@ -22,6 +19,7 @@ export const CreateStreamPopup = ({
     stream_date: moment(new Date()).format('YYYY-MM-DD'),
     stream_time: moment(new Date()).format('HH:mm'),
   });
+  const [loading, setLoading] = useState(false);
   const [streamId, setStreamId] = useState(
     `${streamData?.category?.title}_live_${randomNumber}`,
   );
@@ -35,7 +33,7 @@ export const CreateStreamPopup = ({
   }, [open]);
 
   const watchUrl = useMemo(() => {
-    return `${window.location.origin}/live?watch=${streamId}`;
+    return `${window.location.origin}/live/join?stream_id=${streamId}`;
   }, [streamId]);
 
   const handleChangeStreamData = (key, value) => {
@@ -60,7 +58,9 @@ export const CreateStreamPopup = ({
 
   const onCreateStream = status => {
     if (checkValidation()) {
+      setLoading(true);
       const formData = new FormData();
+
       const streamUrl = `/live/${streamId}`;
       formData.append('image', streamData?.image);
       formData.append('name', streamData?.name);
@@ -79,20 +79,18 @@ export const CreateStreamPopup = ({
       axios
         .post('/api/lives', formData)
         .then(res => {
-          const data = {
-            ...streamData,
-            stream_id: streamId,
-            stream_url: streamUrl,
-            status: status,
-          };
+          setLoading(false);
           setRandomNumber(Math.floor(Math.random() * 100000000000));
           if (status === 'live') {
-            handleClose({ isSuccess: true, streamData: data });
+            router.push(`/live/create?stream_id=${streamId}`);
+            // handleClose({ isSuccess: true, streamData: data });
           } else {
+            router.push(`/live`);
             handleClose();
           }
         })
         .catch(error => {
+          setLoading(false);
           console.log('error:', error);
         });
     }
@@ -218,12 +216,12 @@ export const CreateStreamPopup = ({
                   <button
                     type="button"
                     className="outlineButton"
-                    data-dismiss="modal"
-                    data-toggle="modal"
-                    data-target="#golivepopup"
+                    // data-dismiss="modal"
+                    // data-toggle="modal"
+                    // data-target="#golivepopup"
                     onClick={() => onCreateStream('schedule')}
                   >
-                    Schedule Stream
+                    {loading ? 'Loading...' : 'Schedule Stream'}
                   </button>
                 </div>
                 <div
@@ -237,7 +235,7 @@ export const CreateStreamPopup = ({
                     // data-target="#golivepopup"
                     onClick={() => onCreateStream('live')}
                   >
-                    Go Live Now
+                    {loading ? 'Loading...' : 'Go Live Now'}
                   </button>
                 </div>
               </div>

@@ -52,6 +52,8 @@ Extended.getInitialProps = async function (context) {
       params = '&' + $.param(context.query);
     }
     let type = context.query.pageType ? context.query.pageType : '';
+    console.log('context.query?.slug: ', context.query?.slug);
+
     const pageData = await axios.get(
       `/live/${context.query?.slug}/` + type + '?data=1' + params,
     );

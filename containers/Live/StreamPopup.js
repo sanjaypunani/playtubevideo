@@ -2,14 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { ChatRoomBox } from './ChatRoomBox';
 
 let globalMessages = [];
-var camMode = 'user';
 
 export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
   const videoRef = useRef();
   const [streamStarted, setStreamStarted] = useState(false);
   const [streamEventSentToServer, setStreamEventSentToServer] = useState(false);
   const [localStream, setLocalStream] = useState();
-  const mediaRef = useRef();
   const [mediaRecorder, setMediaRecorder] = useState();
   const [showChat, setShowChat] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -28,20 +26,6 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
   ]);
 
   globalMessages = messages;
-
-  const getAvailableCameras = () => {
-    navigator.mediaDevices
-      .enumerateDevices()
-      .then(devices => {
-        const videoDevices = devices.filter(
-          device => device.kind === 'videoinput',
-        );
-        // setCameraDevices(videoDevices);
-      })
-      .catch(error => {
-        console.error('Error enumerating devices:', error);
-      });
-  };
 
   const setMediaForNonIos = async mode => {
     let stream = await navigator.mediaDevices.getUserMedia({
@@ -80,21 +64,6 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
       console.log('Error accessing webcam on iOS:', error);
     }
     if (iosVideo && videoRef.current) {
-      // if (localStream) {
-      //   const oldVideoTrack = localStream?.getVideoTracks()[0];
-      //   console.log('oldVideoTrack: ', oldVideoTrack);
-      //   const oldVideoSettings = oldVideoTrack.getSettings();
-      //   console.log('oldVideoSettings: ', oldVideoSettings);
-
-      //   const newVideoTrack = iosVideo?.srcObject.getVideoTracks()[0];
-      //   console.log('newVideoTrack: ', newVideoTrack);
-      //   const newVideoSettings = newVideoTrack.getSettings();
-      //   console.log('newVideoSettings: ', newVideoSettings);
-      //   newVideoSettings.timestamp = oldVideoSettings.timestamp;
-      //   console.log('newVideoSettings: after update', newVideoSettings);
-      //   newVideoTrack.applyConstraints(newVideoSettings);
-      // }
-
       setLocalStream(iosVideo?.srcObject);
       videoRef.current.srcObject = iosVideo?.srcObject;
       videoRef.current.play();
@@ -126,12 +95,6 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
         });
       } else {
         socket.emit('changeCamera');
-        // setTimeout(() => {
-        //   socket.emit('startStream', {
-        //     stream_url: streamData?.stream_url,
-        //     stream_id: streamData?.stream_id,
-        //   });
-        // }, 3000);
       }
 
       let recorder = new MediaRecorder(localStream);
@@ -167,7 +130,6 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
   }, [activeCamera]);
 
   useEffect(() => {
-    // getAvailableCameras();
     return () => {
       stopStream();
     };
@@ -187,18 +149,6 @@ export const StreamPopup = ({ handleClose, open, socket, streamData }) => {
 
     socket.emit('joinLiveStream', streamData?.stream_id.toString());
   }, []);
-
-  // const handleCameraSwitch = () => {
-  //   if (localStream) {
-  //     localStream.getTracks().forEach(track => track.stop());
-
-  //     camMode = camMode === 'user' ? 'environment' : 'user';
-  //     localStream.getTracks().forEach(track => track.stop());
-  //     startCamera(camMode);
-  //   } else {
-  //     alert('localstream not found');
-  //   }
-  // };
 
   return (
     <div className={`modal ${open ? 'show' : ''}`} id="golivepopup">
