@@ -218,9 +218,9 @@ export const CreateStreamPopup = ({ handleClose, open, subDomainCategory }) => {
                   <button
                     type="button"
                     className="outlineButton"
-                    data-dismiss="modal"
-                    data-toggle="modal"
-                    data-target="#golivepopup"
+                    // data-dismiss="modal"
+                    // data-toggle="modal"
+                    // data-target="#golivepopup"
                     onClick={() => onCreateStream('schedule')}
                   >
                     {loading ? 'Loading...' : 'Schedule Stream'}
@@ -231,6 +231,7 @@ export const CreateStreamPopup = ({ handleClose, open, subDomainCategory }) => {
                   className="col-md-6"
                 >
                   <button
+                    id="go live button"
                     type="button"
                     // data-dismiss="modal"
                     // data-toggle="modal"
