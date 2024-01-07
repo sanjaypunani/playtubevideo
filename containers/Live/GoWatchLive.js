@@ -1,4 +1,3 @@
-'use client';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './livestream.css';
 import { useRouter } from 'next/router';

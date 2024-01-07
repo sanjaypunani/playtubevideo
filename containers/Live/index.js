@@ -1,4 +1,3 @@
-'use client';
 import React, { useEffect, useState } from 'react';
 import { StreamPopup } from './StreamPopup';
 import './livestream.css';
@@ -252,38 +251,12 @@ export const LiveMainPage = ({ socket, subDomainCategory }) => {
             })}
         </div>
 
-        {showScheduledStream && (
-          <ScheduledStreamPopup
-            socket={socket}
-            open={showScheduledStream}
-            data={scheduledStreamData}
-            handleClose={data => {
-              getPageData();
-              if (data?.isSuccess) {
-                setSchedulesStreamData(data?.streamData);
-                setSchedulesStreamData(false);
-                const liveButton = document.getElementById(
-                  'go-live-hidden-button',
-                );
-                liveButton.click();
-              }
-            }}
-          />
-        )}
-
         {showCreateStream && (
           <CreateStreamPopup
             open={showCreateStream}
             subDomainCategory={subDomainCategory}
             handleClose={data => {
               getPageData();
-              if (data?.isSuccess) {
-                setShowCreateStream(false);
-                const liveButton = document.getElementById(
-                  'go-live-hidden-button',
-                );
-                liveButton.click();
-              }
             }}
           />
         )}

@@ -81,6 +81,8 @@ export const CreateStreamPopup = ({ handleClose, open, subDomainCategory }) => {
         .then(res => {
           setLoading(false);
           setRandomNumber(Math.floor(Math.random() * 100000000000));
+          let closeButton = document.getElementById('close-button-create-live');
+          closeButton.click();
           if (status === 'live') {
             router.push(`/live/create?stream_id=${streamId}`);
             // handleClose({ isSuccess: true, streamData: data });
@@ -238,6 +240,16 @@ export const CreateStreamPopup = ({ handleClose, open, subDomainCategory }) => {
                     {loading ? 'Loading...' : 'Go Live Now'}
                   </button>
                 </div>
+                <button
+                  style={{ display: 'none' }}
+                  id="close-button-create-live"
+                  type="button"
+                  data-dismiss="modal"
+                  data-toggle="modal"
+                  data-target="#golivepopup"
+                >
+                  {'close button'}
+                </button>
               </div>
             </div>
           </div>
