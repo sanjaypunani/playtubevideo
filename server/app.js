@@ -78,8 +78,8 @@ const config = {
   },
   https: {
     port: 8443,
-    key: '/etc/letsencrypt/live/govup.inqtube.com/privkey.pem',
-    cert: '/etc/letsencrypt/live/govup.inqtube.com/fullchain.pem',
+    key: '/etc/letsencrypt/live/inqtube.com/privkey.pem',
+    cert: '/etc/letsencrypt/live/inqtube.com/fullchain.pem',
   },
 };
 
