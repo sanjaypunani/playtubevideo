@@ -302,7 +302,7 @@ class SideFixedMenu extends React.Component {
                       }
                     >
                       <span className="material-icons">shop_two</span>{' '}
-                      {Translate(this.props, 'Purchases')}
+                      {Translate(this.props, 'Donation')}
                     </a>
                   </Link>
                 </li>
