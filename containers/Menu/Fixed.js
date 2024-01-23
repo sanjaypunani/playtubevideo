@@ -648,19 +648,23 @@ class FixedMenu extends Component {
                     </div>
                   ) : (
                     <ul className="loggedin">
-                      <CreateButtons
-                        type="website"
-                        {...this.props}
-                        style={
-                          this.state.type == 'createbuttons'
-                            ? this.state.style
-                            : 'none'
-                        }
-                        openToggle={this.openToggle}
-                        setCreateButtonsWrapperRef={
-                          this.setCreateButtonsWrapperRef
-                        }
-                      />
+                      {this.props.pageInfoData &&
+                      (this.props.pageInfoData.admin_url ||
+                        this.props.pageInfoData.ALLOWALLUSERINADMIN) ? (
+                        <CreateButtons
+                          type="website"
+                          {...this.props}
+                          style={
+                            this.state.type == 'createbuttons'
+                              ? this.state.style
+                              : 'none'
+                          }
+                          openToggle={this.openToggle}
+                          setCreateButtonsWrapperRef={
+                            this.setCreateButtonsWrapperRef
+                          }
+                        />
+                      ) : null}
                       {this.props.pageInfoData.loggedInUserDetails ? (
                         <React.Fragment>
                           <Notifications

@@ -846,19 +846,23 @@ class Menu extends Component {
                   ) : null}
                   <div className="rightTopList">
                     <ul className="custmenuRight">
-                      <CreateButtons
-                        type="website"
-                        {...this.props}
-                        style={
-                          this.state.type == 'createbuttons'
-                            ? this.state.style
-                            : 'none'
-                        }
-                        openToggle={this.openToggle}
-                        setCreateButtonsWrapperRef={
-                          this.setCreateButtonsWrapperRef
-                        }
-                      />
+                      {this.props.pageInfoData &&
+                      (this.props.pageInfoData.admin_url ||
+                        this.props.pageInfoData.ALLOWALLUSERINADMIN) ? (
+                        <CreateButtons
+                          type="website"
+                          {...this.props}
+                          style={
+                            this.state.type == 'createbuttons'
+                              ? this.state.style
+                              : 'none'
+                          }
+                          openToggle={this.openToggle}
+                          setCreateButtonsWrapperRef={
+                            this.setCreateButtonsWrapperRef
+                          }
+                        />
+                      ) : null}
                       {this.props.pageInfoData.loggedInUserDetails ? (
                         <React.Fragment>
                           <Notifications
@@ -1085,17 +1089,21 @@ class Menu extends Component {
                   openToggle={this.openToggle}
                   setNotificationWrapperRef={this.setNotificationWrapperRef}
                 />
-                <CreateButtons
-                  {...this.props}
-                  type="mobile"
-                  style={
-                    this.state.type == 'createbuttons'
-                      ? this.state.style
-                      : 'none'
-                  }
-                  openToggle={this.openToggle}
-                  setCreateButtonsWrapperRef={this.setCreateButtonsWrapperRef}
-                />
+                {this.props.pageInfoData &&
+                (this.props.pageInfoData.admin_url ||
+                  this.props.pageInfoData.ALLOWALLUSERINADMIN) ? (
+                  <CreateButtons
+                    {...this.props}
+                    type="mobile"
+                    style={
+                      this.state.type == 'createbuttons'
+                        ? this.state.style
+                        : 'none'
+                    }
+                    openToggle={this.openToggle}
+                    setCreateButtonsWrapperRef={this.setCreateButtonsWrapperRef}
+                  />
+                ) : null}
                 <SettingMenus
                   {...this.props}
                   type="mobile"

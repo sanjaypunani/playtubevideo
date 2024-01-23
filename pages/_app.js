@@ -101,7 +101,7 @@ class MyApp extends App {
 
   getmyIp = () => {
     if (!localStorage.getItem('ip_language')) {
-      this.setState({ languageLoading: true });
+      // this.setState({ languageLoading: true });
     } else {
       this.setState({
         ip_language: localStorage.getItem('ip_language'),
