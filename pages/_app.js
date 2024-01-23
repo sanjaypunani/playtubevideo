@@ -24,7 +24,7 @@ class MyApp extends App {
     super(props);
     this.state = {
       languageLoading: false,
-      ip_language: '',
+      ip_language: 'hindi',
       subDomainCategory: null,
     };
   }
