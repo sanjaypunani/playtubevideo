@@ -103,7 +103,6 @@ let subscriptions = [];
 
 server.post('/subscribe', (req, res) => {
   const subscription = req.body;
-  console.log('subscription: ', subscription);
   subscriptions.push(subscription);
 
   res.status(201).json({ status: 'success' });
@@ -119,26 +118,26 @@ server.post('/send-notification', (req, res) => {
     },
   };
 
-  registerI18n(server, (t, error) => {
-    Promise.all(
-      subscriptions.map(subscription =>
-        webpush.sendNotification(
-          subscription,
-          JSON.stringify(notificationPayload),
-        ),
+  Promise.all(
+    subscriptions.map(subscription =>
+      webpush.sendNotification(
+        subscription,
+        JSON.stringify(notificationPayload),
       ),
+    ),
+  )
+    .then(() =>
+      res
+        .status(200)
+        .json({ message: 'Notification sent successfully.', subscriptions }),
     )
-      .then(() =>
-        res
-          .status(200)
-          .json({ message: 'Notification sent successfully.', subscriptions }),
-      )
-      .catch(err => {
-        console.error('Error sending notification');
-        res.status(500).json({ err, subscriptions });
-      });
-  });
+    .catch(err => {
+      console.error('Error sending notification');
+      res.status(500).json({ err, subscriptions });
+    });
+});
 
+registerI18n(server, (t, error) => {
   app.prepare().then(() => {
     server.use(cookieParser());
 
