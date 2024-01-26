@@ -128,11 +128,13 @@ registerI18n(server, (t, error) => {
       ),
     )
       .then(() =>
-        res.status(200).json({ message: 'Notification sent successfully.' }),
+        res
+          .status(200)
+          .json({ message: 'Notification sent successfully.', subscriptions }),
       )
       .catch(err => {
         console.error('Error sending notification');
-        res.sendStatus(500);
+        res.status(500).json({ err, subscriptions });
       });
   });
 
