@@ -108,8 +108,7 @@ class MyApp extends App {
 
         const subscription = await register.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey:
-            'BHhW_oSupkzwxHTj4pYIh9tCt2uf8Ht2Gir74bJND0vAUlIC_LMxUIQdMlC6FpF14Iv6AzJKIBAi5oWX4B3x6M4',
+          applicationServerKey: process.env.VAPID_PUBLIC_KEY,
         });
 
         const res = await fetch('/subscribe', {
