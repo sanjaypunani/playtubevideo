@@ -25,8 +25,9 @@ if (process.env.NODE_ENV != 'development') {
 const vapidKeys = {
   publicKey:
     'BFtYaKjK6UqrV5ISrBt0tUSFNUjlBziN5LA8iH1kXrbKd3u8Q14NyXnA8oFOLvc0fNy3G-udcA_BKt4U1wK8nmU',
-  // publicKey: process.env.VAPID_PUBLIC_KEY,
-  // privateKey: process.env.VAPID_PRIVATE_KEY,
+  // publicKey:
+  //   'BHhW_oSupkzwxHTj4pYIh9tCt2uf8Ht2Gir74bJND0vAUlIC_LMxUIQdMlC6FpF14Iv6AzJKIBAi5oWX4B3x6M4',
+  // privateKey: '67q1h5F3OUncyDbR7dTnpGFyWdLqePZv3GFDVL9DYTw',
   privateKey: '9v0I-0lwXTq-uri7uRylb-PP-_RrK6LoKUaRc1j3Q1c',
 };
 
@@ -98,45 +99,6 @@ const config = {
   //   cert: '/etc/letsencrypt/live/inqtube.com/fullchain.pem',
   // },
 };
-
-let subscriptions = [];
-
-server.post('/subscribe', (req, res) => {
-  const subscription = req.body;
-  console.log('subscription: ', subscription);
-  subscriptions.push(subscription);
-
-  res.status(201).json({ status: 'success' });
-});
-
-server.post('/send-notification', (req, res) => {
-  const notificationPayload = {
-    title: 'New Notification',
-    body: 'This is a new notification',
-    icon: 'https://some-image-url.jpg',
-    data: {
-      url: 'https://example.com',
-    },
-  };
-
-  Promise.all(
-    subscriptions.map(subscription =>
-      webpush.sendNotification(
-        subscription,
-        JSON.stringify(notificationPayload),
-      ),
-    ),
-  )
-    .then(() =>
-      res
-        .status(200)
-        .json({ message: 'Notification sent successfully.', subscriptions }),
-    )
-    .catch(err => {
-      console.error('Error sending notification');
-      res.status(500).json({ err, subscriptions });
-    });
-});
 
 registerI18n(server, (t, error) => {
   app.prepare().then(() => {
@@ -426,6 +388,46 @@ registerI18n(server, (t, error) => {
       '/workbox-*.js',
       express.static(path.join(__dirname, '../', 'public/')),
     );
+
+    let subscriptions = [];
+
+    server.post('/subscribe', (req, res) => {
+      const subscription = req.body;
+      console.log('subscription: ', req.body);
+      subscriptions.push(subscription);
+
+      res.status(201).json({ status: 'success' });
+    });
+
+    server.post('/send-notification', (req, res) => {
+      const notificationPayload = {
+        title: 'New Notification',
+        body: 'This is a new notification',
+        icon: 'https://some-image-url.jpg',
+        data: {
+          url: 'https://example.com',
+        },
+      };
+
+      Promise.all(
+        subscriptions.map(subscription =>
+          webpush.sendNotification(
+            subscription,
+            JSON.stringify(notificationPayload),
+          ),
+        ),
+      )
+        .then(() =>
+          res.status(200).json({
+            message: 'Notification sent successfully.',
+            subscriptions,
+          }),
+        )
+        .catch(err => {
+          console.error('Error sending notification');
+          res.status(500).json({ err, subscriptions });
+        });
+    });
 
     server.use(passport.initialize());
 
