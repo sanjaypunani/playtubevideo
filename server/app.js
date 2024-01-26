@@ -14,11 +14,25 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var MySQLStore = require('express-mysql-session')(session);
 const { spawn } = require('child_process');
+const webpush = require('web-push');
+
 const fs = require('fs');
 
 if (process.env.NODE_ENV != 'development') {
   require('dotenv').config();
 }
+
+const vapidKeys = {
+  publicKey:
+    'BHhW_oSupkzwxHTj4pYIh9tCt2uf8Ht2Gir74bJND0vAUlIC_LMxUIQdMlC6FpF14Iv6AzJKIBAi5oWX4B3x6M4',
+  privateKey: '67q1h5F3OUncyDbR7dTnpGFyWdLqePZv3GFDVL9DYTw',
+};
+
+webpush.setVapidDetails(
+  'mailto:test@gmail.com',
+  vapidKeys.publicKey,
+  vapidKeys.privateKey,
+);
 
 const userModel = require('./models/users');
 const levelPermissionModel = require('./models/levelPermissions');
@@ -84,6 +98,42 @@ const config = {
 };
 
 registerI18n(server, (t, error) => {
+  let subscriptions = [];
+
+  server.post('/subscribe', (req, res) => {
+    const subscription = req.body;
+    subscriptions.push(subscription);
+
+    res.status(201).json({ status: 'success' });
+  });
+
+  server.post('/send-notification', (req, res) => {
+    const notificationPayload = {
+      title: 'New Notification',
+      body: 'This is a new notification',
+      icon: 'https://some-image-url.jpg',
+      data: {
+        url: 'https://example.com',
+      },
+    };
+
+    Promise.all(
+      subscriptions.map(subscription =>
+        webpush.sendNotification(
+          subscription,
+          JSON.stringify(notificationPayload),
+        ),
+      ),
+    )
+      .then(() =>
+        res.status(200).json({ message: 'Notification sent successfully.' }),
+      )
+      .catch(err => {
+        console.error('Error sending notification');
+        res.sendStatus(500);
+      });
+  });
+
   app.prepare().then(() => {
     server.use(cookieParser());
 
@@ -356,6 +406,11 @@ registerI18n(server, (t, error) => {
     );
     server.get(
       '/sw.js',
+      express.static(path.join(__dirname, '../', 'public/')),
+    );
+
+    server.get(
+      '/notification_sw.js',
       express.static(path.join(__dirname, '../', 'public/')),
     );
     server.get(

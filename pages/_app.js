@@ -99,6 +99,34 @@ class MyApp extends App {
     NProgress.done();
   };
 
+  onRegisterPushNotification = () => {
+    if ('serviceWorker' in navigator) {
+      const handleServiceWorker = async () => {
+        const register = await navigator.serviceWorker.register(
+          '/notification_sw.js',
+        );
+
+        const subscription = await register.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey:
+            'BHhW_oSupkzwxHTj4pYIh9tCt2uf8Ht2Gir74bJND0vAUlIC_LMxUIQdMlC6FpF14Iv6AzJKIBAi5oWX4B3x6M4',
+        });
+
+        const res = await fetch('/subscribe', {
+          method: 'POST',
+          body: JSON.stringify(subscription),
+          headers: {
+            'content-type': 'application/json',
+          },
+        });
+
+        const data = await res.json();
+        console.log(data);
+      };
+      handleServiceWorker();
+    }
+  };
+
   getmyIp = () => {
     if (!localStorage.getItem('ip_language')) {
       // this.setState({ languageLoading: true });
@@ -151,6 +179,7 @@ class MyApp extends App {
     }
   };
   componentDidMount() {
+    this.onRegisterPushNotification();
     this.handleSubdomain();
     this.getmyIp();
     Router.events.on('routeChangeStart', this.onRouteChangeStart);
