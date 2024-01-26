@@ -92,11 +92,11 @@ const config = {
     port: 8000,
     allow_origin: '*',
   },
-  https: {
-    port: 8443,
-    key: '/etc/letsencrypt/live/inqtube.com/privkey.pem',
-    cert: '/etc/letsencrypt/live/inqtube.com/fullchain.pem',
-  },
+  // https: {
+  //   port: 8443,
+  //   key: '/etc/letsencrypt/live/inqtube.com/privkey.pem',
+  //   cert: '/etc/letsencrypt/live/inqtube.com/fullchain.pem',
+  // },
 };
 
 let subscriptions = [];

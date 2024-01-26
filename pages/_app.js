@@ -105,10 +105,6 @@ class MyApp extends App {
         const register = await navigator.serviceWorker.register(
           '/notification_sw.js',
         );
-        console.log(
-          'process.env.VAPID_PUBLIC_KEY: ',
-          process.env.VAPID_PUBLIC_KEY,
-        );
 
         const subscription = await register.pushManager.subscribe({
           userVisibleOnly: true,
@@ -116,6 +112,7 @@ class MyApp extends App {
             process.env.VAPID_PUBLIC_KEY ||
             'BFtYaKjK6UqrV5ISrBt0tUSFNUjlBziN5LA8iH1kXrbKd3u8Q14NyXnA8oFOLvc0fNy3G-udcA_BKt4U1wK8nmU',
         });
+        console.log('subscription: ', subscription);
 
         const res = await fetch('/subscribe', {
           method: 'POST',
