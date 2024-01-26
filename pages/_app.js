@@ -123,6 +123,8 @@ class MyApp extends App {
         console.log(data);
       };
       handleServiceWorker();
+    } else {
+      console.log('services worker not found');
     }
   };
 
