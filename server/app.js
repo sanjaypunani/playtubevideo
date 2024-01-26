@@ -99,26 +99,27 @@ const config = {
   },
 };
 
-registerI18n(server, (t, error) => {
-  let subscriptions = [];
+let subscriptions = [];
 
-  server.post('/subscribe', (req, res) => {
-    const subscription = req.body;
-    subscriptions.push(subscription);
+server.post('/subscribe', (req, res) => {
+  const subscription = req.body;
+  console.log('subscription: ', subscription);
+  subscriptions.push(subscription);
 
-    res.status(201).json({ status: 'success' });
-  });
+  res.status(201).json({ status: 'success' });
+});
 
-  server.post('/send-notification', (req, res) => {
-    const notificationPayload = {
-      title: 'New Notification',
-      body: 'This is a new notification',
-      icon: 'https://some-image-url.jpg',
-      data: {
-        url: 'https://example.com',
-      },
-    };
+server.post('/send-notification', (req, res) => {
+  const notificationPayload = {
+    title: 'New Notification',
+    body: 'This is a new notification',
+    icon: 'https://some-image-url.jpg',
+    data: {
+      url: 'https://example.com',
+    },
+  };
 
+  registerI18n(server, (t, error) => {
     Promise.all(
       subscriptions.map(subscription =>
         webpush.sendNotification(
