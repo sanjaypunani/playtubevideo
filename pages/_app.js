@@ -184,7 +184,7 @@ class MyApp extends App {
     }
   };
   componentDidMount() {
-    this.onRegisterPushNotification();
+    // this.onRegisterPushNotification();
     this.handleSubdomain();
     this.getmyIp();
     Router.events.on('routeChangeStart', this.onRouteChangeStart);
