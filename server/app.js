@@ -23,8 +23,11 @@ if (process.env.NODE_ENV != 'development') {
 }
 
 const vapidKeys = {
-  publicKey: process.env.VAPID_PUBLIC_KEY,
-  privateKey: process.env.VAPID_PRIVATE_KEY,
+  publicKey:
+    'BFtYaKjK6UqrV5ISrBt0tUSFNUjlBziN5LA8iH1kXrbKd3u8Q14NyXnA8oFOLvc0fNy3G-udcA_BKt4U1wK8nmU',
+  // publicKey: process.env.VAPID_PUBLIC_KEY,
+  // privateKey: process.env.VAPID_PRIVATE_KEY,
+  privateKey: '9v0I-0lwXTq-uri7uRylb-PP-_RrK6LoKUaRc1j3Q1c',
 };
 
 webpush.setVapidDetails(
