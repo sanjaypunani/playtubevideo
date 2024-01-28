@@ -49,6 +49,24 @@ router.post(
   controller.delete,
 );
 
+router.post(
+  '/video/remove-video-file',
+  multer().none(),
+  async (req, res, next) => {
+    const id = req.body.video_id;
+    console.log('req.body.video_id: ', req.body.video_id);
+    videoModel.findByCustomUrl(id, req, res).then(result => {
+      if (result) {
+        const video_path = __dirname + '/../../public' + result.video_location;
+        fs.unlinkSync(video_path);
+        res.send({ message: 'remove success', video_path });
+      }
+      res.send({ message: 'unable to find video' });
+    });
+  },
+  controller.delete,
+);
+
 router.post('/videos/search', multer().none(), controller.getVideos);
 router.post('/videos/donors', multer().none(), controller.getDonors);
 router.post('/send-tip', isLogin, multer().none(), controller.sendTip);

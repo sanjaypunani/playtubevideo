@@ -459,9 +459,9 @@ registerI18n(server, (t, error) => {
         if (userip) {
           if (req.user && req.user.ip_address != userip) {
             //update user recent ip
-            userModel
-              .updateIP(req, userip, req.user.user_id)
-              .then(result => {});
+            // userModel
+            //   .updateIP(req, userip, req.user.user_id)
+            //   .then(result => {});
           }
         }
         //check ban user ips
