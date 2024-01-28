@@ -194,7 +194,10 @@ export const GoWatchLive = ({ socket, pageData }) => {
           <div className="live-warper">
             {playingUrl && slug && slug === 'join' && (
               <ReactPlayer
-                url={playingUrl}
+                // url={playingUrl}
+                url={
+                  'https://storage1.inqtube.com/storage/BSNL-113/BSNL-113-144p/BSNL-113-144p.m3u8'
+                }
                 className="live-video-view"
                 playing
                 muted
