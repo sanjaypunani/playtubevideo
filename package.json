@@ -44,6 +44,7 @@
     "cors": "^2.8.5",
     "css-loader": "^5.0.1",
     "csurf": "^1.11.0",
+    "csv-parser": "^3.0.0",
     "currency-symbol-map": "^5.0.1",
     "dateformat": "^4.5.0",
     "dotenv": "^8.2.0",
