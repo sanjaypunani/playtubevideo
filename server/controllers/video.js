@@ -1047,8 +1047,39 @@ exports.view = async (req, res) => {
     } else {
       await videoModel
         .getVideos(req, { video_id: video.parent_video })
-        .then(result => {
+        .then(async result => {
           req.query.mainVideo = result[0];
+
+          if (req.query.mainVideo.category_id) {
+            await categoryModel
+              .findById(req.query.mainVideo.category_id, req, res)
+              .then(result => {
+                if (result) {
+                  req.query.mainVideo.category = result;
+                }
+              })
+              .catch(err => {});
+            if (req.query.mainVideo.subcategory_id) {
+              await categoryModel
+                .findById(req.query.mainVideo.subcategory_id, req, res)
+                .then(result => {
+                  if (result) {
+                    req.query.mainVideo.subcategory = result;
+                  }
+                })
+                .catch(err => {});
+              if (req.query.mainVideo.subsubcategory_id) {
+                await categoryModel
+                  .findById(req.query.mainVideo.subsubcategory_id, req, res)
+                  .then(result => {
+                    if (result) {
+                      req.query.mainVideo.subsubcategory = result;
+                    }
+                  })
+                  .catch(err => {});
+              }
+            }
+          }
         })
         .catch(error => {
           showVideo = false;

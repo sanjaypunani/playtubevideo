@@ -13,6 +13,7 @@
     "PUBLIC_URL": "http://localhost:3000",
     "SECRETKEY": "videoscriptsectetkey0root",
     "FFMPEG_PATH":"/opt/homebrew/bin/ffmpeg",
+    "SSHPASS_PATH":"/opt/homebrew/bin/sshpass",
     "MEDIA_ROOT":"./recording"
   }
 }

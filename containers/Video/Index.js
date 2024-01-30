@@ -938,14 +938,26 @@ class Index extends Component {
                                 return (
                                   <div
                                     style={{ cursor: 'pointer' }}
-                                    onClick={
-                                      () => {
-                                        Router.push(
-                                          `/${item?.language}/watch/${this.props.pageInfoData.mainVideo?.category?.title}-${this.props.pageInfoData.mainVideo?.video_id}`,
-                                        );
+                                    onClick={() => {
+                                      let video_custom_url = '';
+
+                                      if (
+                                        this.props.pageInfoData?.mainVideo
+                                          ?.subcategory
+                                      ) {
+                                        video_custom_url = `${this.props.pageInfoData?.mainVideo?.subcategory?.title}-${this.props.pageInfoData?.mainVideo?.video_id}`;
+                                      } else {
+                                        video_custom_url = `${this.props.pageInfoData?.mainVideo?.category?.title}-${this.props.pageInfoData?.mainVideo?.video_id}`;
                                       }
-                                      // handleChangeStreamData('category', item)
-                                    }
+                                      console.log(
+                                        'video_custom_url: ',
+                                        video_custom_url,
+                                      );
+
+                                      Router.push(
+                                        `/${item?.language}/watch/${video_custom_url}`,
+                                      );
+                                    }}
                                     class="dropdown-item"
                                   >
                                     {item?.language || 'Hindi'}

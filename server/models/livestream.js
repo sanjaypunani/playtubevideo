@@ -214,4 +214,29 @@ module.exports = {
       });
     });
   },
+
+  updateLivebyConnections: function (connection, data) {
+    return new Promise(function (resolve, reject) {
+      if (data?.stream_id) {
+        let queryValue = data?.stream_id;
+
+        let objectData = { ...data };
+        delete objectData.stream_id;
+        const updateColumns = Object.keys(objectData)
+          .map(column => `${column} = '${objectData[column]}'`)
+          .join(', ');
+        let updateQuery = `UPDATE ${'live_stream'} SET ${updateColumns} WHERE stream_id = '${queryValue}'`;
+
+        connection.query(updateQuery, function (err, results) {
+          if (!err) {
+            console.log('Update stream success');
+            resolve(results);
+          } else {
+            console.log(err);
+            reject(err);
+          }
+        });
+      }
+    });
+  },
 };

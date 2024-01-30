@@ -13,7 +13,7 @@ var mysql = require('mysql');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var MySQLStore = require('express-mysql-session')(session);
-const { spawn } = require('child_process');
+const { spawn, exec } = require('child_process');
 const webpush = require('web-push');
 
 const fs = require('fs');
@@ -667,28 +667,10 @@ registerI18n(server, (t, error) => {
           'pipe:0',
           '-c:v',
           'libx264',
-          // '-preset',
-          // 'ultrafast',
           '-c:a',
           'aac',
-          // '-vsync',
-          // '0',
-          // '-ar',
-          // '44100',
           '-f',
-          // 'fifo',
-          // '-fifo_format',
           'flv',
-          // '-map',
-          // '0:v',
-          // '-map',
-          // '0:a',
-          // '-drop_pkts_on_overflow',
-          // '1',
-          // '-attempt_recovery',
-          // '1',
-          // '-recovery_wait_time',
-          // '1',
           rtmpServer,
         ]);
         const reqData = {
@@ -699,7 +681,6 @@ registerI18n(server, (t, error) => {
         io.emit('update_live');
 
         socket.on('streamData', stream => {
-          // console.log('stream: is in main', stream);
           if (ffmpegProcess) {
             ffmpegProcess.stdin.write(stream);
           }
@@ -733,18 +714,6 @@ registerI18n(server, (t, error) => {
 
         ffmpegHslProcess.stderr.on('data', data => {});
 
-        // let streamFileCheckInterval = setInterval(async () => {
-        //   if (fs.existsSync(`${hslFilePath}/${fileName}.m3u8`)) {
-        //     clearInterval(streamFileCheckInterval);
-        //     const reqData = {
-        //       stream_id: data?.stream_id,
-        //       status: 'live',
-        //     };
-        //     await livestream.updateLiveStreamStatus(mysqlconnection, reqData);
-        //     io.emit('update_live');
-        //   }
-        // }, 1000);
-
         socket.on('streamEnd', () => {
           console.log('get call for stream end');
           ffmpegProcess.kill();
@@ -760,6 +729,8 @@ registerI18n(server, (t, error) => {
             action: 'end_live',
             data: { stream_path: data?.stream_url },
           });
+
+          transferRecordingToStorageServer(mysqlconnection, data?.stream_id);
         });
       });
 
@@ -796,11 +767,38 @@ registerI18n(server, (t, error) => {
             action: 'end_live',
             data: { stream_id: id, stream_path: streamPath },
           });
+          transferRecordingToStorageServer(mysqlconnection, id);
           console.log('[Node-Media-Server] Stream stopped:', streamPath);
         });
       }
     }, 2000);
   });
 
-  const initRtmp = () => {};
+  function transferRecordingToStorageServer(connection, stream_id) {
+    // const recordingPath = __dirname + '/../recording/' + stream_id + '/';
+    // const transferCommand = `${
+    //   process.env.SSHPASS_PATH
+    // } -p "Fh23?^Gwe24"  scp -P 5726 -i ${
+    //   __dirname + '/clickvid'
+    // } -r ${recordingPath} root@103.117.156.144:/var/www/html/storage`;
+    // console.log('transferCommand: ', transferCommand);
+    // exec(transferCommand, async (error, stdout, stderr) => {
+    //   if (error) {
+    //     console.log(`Error on transfer Recording: ${error.message}`);
+    //     return;
+    //   }
+    //   if (stderr) {
+    //     console.log(`Error on transfer Recording: ${stderr}`);
+    //     return;
+    //   }
+    //   const newRecordingPath = `https://storage1.inqtube.com/storage/${stream_id}/${stream_id}.m3u8`;
+    //   const updateData = {
+    //     stream_id,
+    //     recording: newRecordingPath,
+    //   };
+    //   await livestream.updateLivebyConnections(connection, updateData);
+    //   // stdout returns the output of the command if you wish to use
+    //   console.log(`Successfully transfert Recording: ${stdout}`);
+    // });
+  }
 });
