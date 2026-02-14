@@ -223,12 +223,12 @@ const languages = [
 ];
 
 const subDomains = [
-  {
-    slug: 'sbi',
-    title: 'SBI',
-    light_logo: '/resources/sbi.logoinqtube.png',
-    dark_logo: '/resources/sbi.logoinqtube.png',
-  },
+  // {
+  //   slug: 'sbi',
+  //   title: 'SBI',
+  //   light_logo: '/resources/sbi.logoinqtube.png',
+  //   dark_logo: '/resources/sbi.logoinqtube.png',
+  // },
   {
     slug: 'govt',
     title: 'GOVT',
