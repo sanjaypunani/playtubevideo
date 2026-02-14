@@ -270,6 +270,56 @@ const subDomains = [
     light_logo: '/resources/aubank.logo.inqtube.png',
     dark_logo: '/resources/aubank.logo.inqtube.png',
   },
+
+  {
+    slug: 'ucobank',
+    title: 'UCOBANK',
+    light_logo: '/resources/ucobank.logo.inqtube.png',
+    dark_logo: '/resources/ucobank.logo.inqtube.png',
+  },
+  {
+    slug: 'canera',
+    title: 'CANERA',
+    light_logo: '/resources/canera.logo.inqtube.png',
+    dark_logo: '/resources/canera.logo.inqtube.png',
+  },
+  {
+    slug: 'bob',
+    title: 'BOB',
+    light_logo: '/resources/bob.logo.inqtube.png',
+    dark_logo: '/resources/bob.logo.inqtube.png',
+  },
+  {
+    slug: 'unionbank',
+    title: 'UNIONBANK',
+    light_logo: '/resources/unionbank.logo.inqtube.jpeg',
+    dark_logo: '/resources/unionbank.logo.inqtube.jpeg',
+  },
+  {
+    slug: 'hdfc',
+    title: 'HDFC',
+    light_logo: '/resources/hdfc.logo.inqtube.png',
+    dark_logo: '/resources/hdfc.logo.inqtube.png',
+  },
+  {
+    slug: 'icici',
+    title: 'ICICI',
+    light_logo: '/resources/icici.logo.inqtube.jpeg',
+    dark_logo: '/resources/icici.logo.inqtube.jpeg',
+  },
+  {
+    slug: 'chhatishgarhgov',
+    title: 'CHHATISHGARHG',
+    light_logo: '/resources/chhatishgarhgov.logo.inqtube.jpeg',
+    dark_logo: '/resources/chhatishgarhgov.logo.inqtube.jpeg',
+  },
+  {
+    slug: 'jio',
+    title: 'JIO',
+    light_logo: '/resources/jio.logo.inqtube.png',
+    dark_logo: '/resources/jio.logo.inqtube.png',
+  },
+  
 ];
 
 module.exports = {
