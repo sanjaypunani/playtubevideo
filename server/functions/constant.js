@@ -280,14 +280,14 @@ const subDomains = [
   {
     slug: 'canera',
     title: 'CANERA',
-    light_logo: '/resources/canera.logo.inqtube.png',
-    dark_logo: '/resources/canera.logo.inqtube.png',
+    light_logo: '/resources/canara.inqtube.logo.png',
+    dark_logo: '/resources/canara.inqtube.logo.png',
   },
   {
     slug: 'bob',
     title: 'BOB',
-    light_logo: '/resources/bob.logo.inqtube.png',
-    dark_logo: '/resources/bob.logo.inqtube.png',
+    light_logo: '/resources/bob.inqtube.logo.png',
+    dark_logo: '/resources/bob.inqtube.logo.png',
   },
   {
     slug: 'unionbank',
@@ -310,8 +310,8 @@ const subDomains = [
   {
     slug: 'chhatishgarhgov',
     title: 'CHHATISHGARHG',
-    light_logo: '/resources/chhatishgarhgov.logo.inqtube.jpeg',
-    dark_logo: '/resources/chhatishgarhgov.logo.inqtube.jpeg',
+    light_logo: '/resources/chhattisgarh.inqtube.logo.png',
+    dark_logo: '/resources/chhattisgarh.inqtube.logo.png',
   },
   {
     slug: 'jio',
@@ -319,7 +319,24 @@ const subDomains = [
     light_logo: '/resources/jio.logo.inqtube.png',
     dark_logo: '/resources/jio.logo.inqtube.png',
   },
-  
+  {
+    slug: 'eximbank',
+    title: 'EXIM',
+    light_logo: '/resources/exim.inqtube.logo.png',
+    dark_logo: '/resources/exim.inqtube.logo.png',
+  },
+  {
+    slug: 'moib',
+    title: 'MOIB',
+    light_logo: '/resources/moib.inqtube.logo.png',
+    dark_logo: '/resources/moib.inqtube.logo.png',
+  },
+  {
+    slug: 'nsic',
+    title: 'NSIC',
+    light_logo: '/resources/nsic.inqtube.logo.png',
+    dark_logo: '/resources/nsic.inqtube.logo.png',
+  },
 ];
 
 module.exports = {
