@@ -320,7 +320,7 @@ const subDomains = [
     dark_logo: '/resources/jio.logo.inqtube.png',
   },
   {
-    slug: 'eximbank',
+    slug: 'exim',
     title: 'EXIM',
     light_logo: '/resources/exim.inqtube.logo.png',
     dark_logo: '/resources/exim.inqtube.logo.png',
