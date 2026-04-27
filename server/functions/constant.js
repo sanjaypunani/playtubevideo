@@ -278,8 +278,8 @@ const subDomains = [
     dark_logo: '/resources/ucobank.logo.inqtube.png',
   },
   {
-    slug: 'canera',
-    title: 'CANERA',
+    slug: 'canara',
+    title: 'CANARA',
     light_logo: '/resources/canara.inqtube.logo.png',
     dark_logo: '/resources/canara.inqtube.logo.png',
   },
