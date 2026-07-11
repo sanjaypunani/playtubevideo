@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const multer = require('multer');
 const controller = require('../../controllers/api/video');
+const chunkedUploadController = require('../../controllers/api/chunkedUpload');
 const upload = require('../../functions/upload').upload;
 const resize = require('../../functions/resize');
 const path = require('path');
@@ -230,4 +231,108 @@ router.post(
   },
   controller.upload,
 );
+
+// Chunked upload - receive individual chunks
+router.post(
+  '/videos/upload-chunk',
+  isLogin,
+  async (req, res, next) => {
+    await commonFunction.getGeneralInfo(req, res, '', true);
+    if (
+      req.user.levelFlag != 'superadmin' &&
+      req.levelPermissions['video.storage'] != 0 &&
+      req.levelPermissions['video.storage'] <
+        req.user.upload_content_length + req.headers['content-length']
+    ) {
+      req.uploadLimitError = true;
+    }
+    if (!req.uploadLimitError && req.levelPermissions['video.quota'] > 0) {
+      await videoModel
+        .userVideoUploadCount(req, res)
+        .then(result => {
+          if (result) {
+            if (result.totalVideos >= req.levelPermissions['video.quota']) {
+              req.quotaLimitError = true;
+            }
+          }
+        })
+        .catch(error => {
+          return res
+            .send({
+              error: fieldErrors.errors(
+                [{ msg: constant.general.GENERAL }],
+                true,
+              ),
+              status: errorCodes.serverError,
+            })
+            .end();
+        });
+    }
+    next();
+  },
+  (req, res, next) => {
+    if (req.uploadLimitError || req.quotaLimitError) {
+      next();
+      return;
+    }
+    req.allowedFileTypes = /mp4|mov|webm|mpeg|3gp|avi|flv|ogg|mkv|mk3d|mks|wmv|octet-stream|bin/;
+    req.uploadDirect = true;
+    var currUpload = upload('upload', 'upload/videos/video/', req, 'video');
+    currUpload(req, res, function (err) {
+      if (err) {
+        req.imageError =
+          'Uploaded chunk is too large, please try again.';
+        next();
+      } else {
+        req.fileName = req.file ? req.file.filename : false;
+        next();
+      }
+    });
+  },
+  chunkedUploadController.uploadChunk,
+);
+
+// Chunked upload - assemble all chunks into final video
+router.post(
+  '/videos/upload-chunk-complete',
+  isLogin,
+  multer().none(),
+  async (req, res, next) => {
+    await commonFunction.getGeneralInfo(req, res, '', true);
+    if (
+      req.user.levelFlag != 'superadmin' &&
+      req.levelPermissions['video.storage'] != 0 &&
+      req.levelPermissions['video.storage'] <
+        req.user.upload_content_length
+    ) {
+      req.uploadLimitError = true;
+    }
+    if (!req.uploadLimitError && req.levelPermissions['video.quota'] > 0) {
+      await videoModel
+        .userVideoUploadCount(req, res)
+        .then(result => {
+          if (result) {
+            if (result.totalVideos >= req.levelPermissions['video.quota']) {
+              req.quotaLimitError = true;
+            }
+          }
+        })
+        .catch(error => {
+          return res
+            .send({
+              error: fieldErrors.errors(
+                [{ msg: constant.general.GENERAL }],
+                true,
+              ),
+              status: errorCodes.serverError,
+            })
+            .end();
+        });
+    }
+    next();
+  },
+  chunkedUploadController.uploadChunkComplete,
+);
+
 module.exports = router;
+

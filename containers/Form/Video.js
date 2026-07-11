@@ -459,7 +459,136 @@ class Video extends Component {
       );
       return false;
     }
-    this.onSubmitUploadImport({ upload: e });
+
+    // Use chunked upload for files larger than 90MB to bypass Cloudflare limits
+    const CHUNK_THRESHOLD = 90 * 1024 * 1024; // 90MB
+    if (e.size > CHUNK_THRESHOLD) {
+      this.uploadMediaChunked(e);
+    } else {
+      this.onSubmitUploadImport({ upload: e });
+    }
+  };
+
+  uploadMediaChunked = async (file) => {
+    if (this.state.validating) {
+      return;
+    }
+
+    const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB per chunk
+    const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+    const fileName = file.name;
+
+    this.setState({
+      localUpdate: true,
+      validating: true,
+      error: null,
+      percentCompleted: 0,
+      processing: false,
+    });
+
+    let uploadId = null;
+
+    try {
+      // Upload chunks sequentially
+      for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+        const start = chunkIndex * CHUNK_SIZE;
+        const end = Math.min(start + CHUNK_SIZE, file.size);
+        const chunk = file.slice(start, end);
+
+        const formData = new FormData();
+        // Send chunk as a file blob with the original extension so multer accepts it
+        formData.append('upload', chunk, fileName);
+        formData.append('chunkIndex', chunkIndex);
+        formData.append('totalChunks', totalChunks);
+        formData.append('fileName', fileName);
+        if (uploadId) {
+          formData.append('uploadId', uploadId);
+        }
+
+        const response = await axios.post('/videos/upload-chunk', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+        if (response.data.error) {
+          window.scrollTo(0, this.myRef.current.offsetTop);
+          this.setState({
+            localUpdate: true,
+            error: response.data.error,
+            validating: false,
+            percentCompleted: 0,
+          });
+          return;
+        }
+
+        // Save uploadId from first chunk response
+        if (!uploadId && response.data.uploadId) {
+          uploadId = response.data.uploadId;
+        }
+
+        // Update progress based on chunks uploaded
+        const percentCompleted = Math.round(
+          ((chunkIndex + 1) / totalChunks) * 95, // Reserve last 5% for assembly
+        );
+        this.setState({
+          localUpdate: true,
+          percentCompleted: percentCompleted,
+          processing: false,
+        });
+      }
+
+      // All chunks uploaded, now trigger assembly
+      this.setState({
+        localUpdate: true,
+        percentCompleted: 98,
+        processing: true,
+      });
+
+      const completeFormData = new FormData();
+      completeFormData.append('uploadId', uploadId);
+      completeFormData.append('totalChunks', totalChunks);
+      completeFormData.append('fileName', fileName);
+
+      const completeResponse = await axios.post(
+        '/videos/upload-chunk-complete',
+        completeFormData,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        },
+      );
+
+      if (completeResponse.data.error) {
+        window.scrollTo(0, this.myRef.current.offsetTop);
+        this.setState({
+          localUpdate: true,
+          error: completeResponse.data.error,
+          validating: false,
+          percentCompleted: 0,
+          processing: false,
+        });
+        return;
+      }
+
+      // Success - same state update as the normal upload handler
+      this.setState({
+        localUpdate: true,
+        videoWidth: completeResponse.data.videoWidth,
+        validating: false,
+        videoId: completeResponse.data.videoId,
+        success: true,
+        videoTitle: completeResponse.data.name,
+        videoImage: completeResponse.data.images[0],
+        percentCompleted: 100,
+        processing: false,
+      });
+    } catch (err) {
+      this.setState({
+        localUpdate: true,
+        validating: false,
+        error: err,
+        percentCompleted: 0,
+        processing: false,
+      });
+    }
   };
   onSubmitUploadImport = model => {
     if (this.state.validating) {
